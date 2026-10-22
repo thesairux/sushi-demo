@@ -7,6 +7,7 @@ Trae una carta de ejemplo con el nombre **Demo**:
 - **Sushi**: rolls, handrolls y «Ármalos a tu pinta» (el cliente elige proteína, relleno y envoltura en cada roll).
 - **Hamburguesas**: simple o doble, punto de la carne y agregados con precio (tocino, palta, huevo…).
 - **Para picar**, **Bebestibles** (bebidas, jugos y limonadas con sabor a elegir) y **Postres**.
+- **Cupones** de descuento: tickets en la página que se usan con un toque, o un código que se escribe en el pedido.
 - Pedido con retiro o delivery que se envía ordenado por WhatsApp, buscador, horario, mapa y panel `/admin`.
 
 Es una página estática: no necesita servidor, base de datos ni instalar nada. Funciona en Vercel
@@ -47,6 +48,7 @@ Ahí ves la página tal cual, y:
 - En **Opciones para elegir** están los grupos que el cliente elige al agregar un producto: punto de la carne,
   agregados con precio, y las proteínas, rellenos y envolturas de los rolls. Se pueden crear grupos nuevos
   (por ejemplo «Salsa» o «Tamaño de la pizza») y en cada producto se marca cuáles se le preguntan al cliente.
+- En **Cupones** se crean los códigos de descuento (ver más abajo).
 - **Ver como cliente** muestra la página sin marcas de edición; **Celular** la muestra en tamaño de teléfono.
 - Al tocar **Publicar**, los cambios se guardan en el repositorio y Vercel actualiza la página sola
   en uno o dos minutos.
@@ -100,6 +102,20 @@ personalizacion      → grupos que el cliente elige: punto de la carne, agregad
   o en un producto (reemplaza al de la categoría; por ejemplo el pollo crispy solo lleva `["agregados"]`).
 - La sección **Arma tu roll** de la página aparece sola si hay una categoría con grupos `porRoll`;
   si el local no vende sushi, desaparece junto con su enlace del menú.
+
+**Cupones** (`cupones`)
+- Cada cupón tiene un `"codigo"` (lo que escribe el cliente), un `"nombre"` (cómo se muestra), un `"tipo"`
+  (`"porcentaje"` o `"monto"`) y un `"valor"` (`10` = 10%, o `2000` = $2.000).
+- Condiciones opcionales: `"minimo"` (pedido mínimo), `"tope"` (descuento máximo de un porcentaje),
+  `"desde"` y `"hasta"` (`"2026-12-31"`), `"dias"` (`["martes"]`), `"modo"` (`"retiro"` o `"delivery"`) y
+  `"aplica"` (ids de categorías, por ejemplo `["hamburguesas"]`: el descuento se calcula solo sobre esos productos).
+- `"activo": false` lo apaga sin borrarlo; `"visible": false` lo saca de la página, pero el código sigue funcionando
+  (para redes, volantes o clientes frecuentes).
+- Un cupón por pedido. Si el pedido no cumple una condición, el cliente ve por qué (por ejemplo «te faltan $2.300») y el
+  descuento se aplica solo cuando la cumple. El mensaje de WhatsApp lleva el cupón, el descuento y el total.
+- La página no tiene servidor: los códigos se pueden ver en `carta.js` y no se puede limitar a «un uso por persona».
+  Por eso cada cupón llega escrito en el pedido, para que el local lo confirme al responder.
+- Si no hay cupones activos y visibles, la sección **Cupones** y su enlace del menú no aparecen.
 
 **Local, horario y delivery**
 - **Horario**: `"lunes": "12:30-23:00"`, `"domingo": "cerrado"` o dos turnos `"12:00-15:30, 19:00-23:00"`.

@@ -33,6 +33,13 @@
       "tipo": "extra" con "max": 10             → agregados opcionales con precio (ej: tocino +$1.000).
       "porRoll": true                           → se elige en cada roll (proteína, relleno, envoltura).
       "porDefecto": true en una opción          → queda marcada de entrada.
+  - "cupones": códigos de descuento (un cupón por pedido).
+      "tipo": "porcentaje" (10 = 10%) o "monto" (2000 = $2.000), con su "valor".
+      Opcionales: "minimo" (pedido mínimo), "tope" (descuento máximo de un porcentaje),
+      "desde" y "hasta" ("2026-12-31"), "dias" (["martes"]), "modo" ("retiro" o "delivery"),
+      "aplica" (ids de categorías: el descuento se calcula solo sobre esas), "activo": false (apagado)
+      y "visible": false (no aparece en la página; sirve para redes o volantes).
+      Ojo: los códigos se pueden ver en este archivo. El local confirma cada cupón en el WhatsApp.
   - "rolls": cuántos rolls arma el cliente en ese producto (20 cortes = 2 rolls de 10).
   - En una opción de "personalizacion", "gratis": 1 significa que la primera de esa opción no se cobra
     y desde la segunda se cobra su precio (ej: la primera envoltura en palta y la primera en queso).
@@ -82,6 +89,11 @@ window.CARTA = {
       "titulo": "Elige tu",
       "destacado": "antojo",
       "bajada": "Promos, sushi, hamburguesas, para picar, bebestibles y postres. Suma lo que quieras al pedido."
+    },
+    "cupones": {
+      "titulo": "Cupones",
+      "destacado": "de la semana",
+      "bajada": "Toca «Usar cupón» y el descuento se aplica solo en tu pedido. Un cupón por pedido."
     },
     "arma": { "titulo": "Arma tu", "destacado": "roll" },
     "pasos": {
@@ -286,6 +298,41 @@ window.CARTA = {
           ]
         }
       ]
+    }
+  ],
+  "cupones": [
+    {
+      "codigo": "BIENVENIDA",
+      "nombre": "10% en tu primer pedido",
+      "tipo": "porcentaje",
+      "valor": 10,
+      "minimo": 10000,
+      "tope": 5000
+    },
+    {
+      "codigo": "RETIRO3000",
+      "nombre": "$3.000 menos retirando en el local",
+      "tipo": "monto",
+      "valor": 3000,
+      "minimo": 20000,
+      "modo": "retiro"
+    },
+    {
+      "codigo": "MARTESBURGER",
+      "nombre": "Martes de burger: 20% en hamburguesas",
+      "tipo": "porcentaje",
+      "valor": 20,
+      "dias": ["martes"],
+      "aplica": ["hamburguesas"]
+    },
+    {
+      "codigo": "INSTA15",
+      "nombre": "15% para seguidores de Instagram",
+      "tipo": "porcentaje",
+      "valor": 15,
+      "minimo": 15000,
+      "hasta": "2026-12-31",
+      "visible": false
     }
   ],
   "personalizacion": [

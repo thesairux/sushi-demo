@@ -41,7 +41,8 @@
     check: '<path d="m5 12 4.5 4.5L19 7"/>',
     pausa: '<path d="M9 6v12M15 6v12"/>',
     play: '<path d="M8 5.5v13l10-6.5-10-6.5Z"/>',
-    ubicacion: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>'
+    ubicacion: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>',
+    cupon: '<path d="M3.5 7h17v3a2 2 0 0 0 0 4v3h-17v-3a2 2 0 0 0 0-4Z"/><path d="M10 7.5v1.5M10 11.25v1.5M10 15v1.5"/>'
   };
   function icono(nombre) { return '<svg class="icono" viewBox="0 0 24 24" aria-hidden="true">' + ICONOS[nombre] + "</svg>"; }
 
@@ -49,6 +50,7 @@
   var PRODUCTOS = {};
   var GRUPOS = {};
   var RUTA_CAT = {};
+  var CATS = {};
   var CON_HORARIO = false;
   var HORARIO_ACTIVO = false;
   /* Toma los datos de carta.js, o los que manda el panel en la vista previa. "ruta" dice dónde está
@@ -60,10 +62,12 @@
     PRODUCTOS = {};
     GRUPOS = {};
     RUTA_CAT = {};
+    CATS = {};
     (C.secciones || []).forEach(function (sec, si) {
       (sec.categorias || []).forEach(function (cat, ci) {
         var ruta = "secciones." + si + ".categorias." + ci;
         RUTA_CAT[cat.id] = ruta;
+        CATS[cat.id] = cat;
         (cat.productos || []).forEach(function (p, pi) {
           PRODUCTOS[p.id] = { p: p, cat: cat, sec: sec, ruta: ruta + ".productos." + pi };
         });
@@ -280,6 +284,64 @@
   }
 
   var estado = estadoLocal();
+
+  /* ---------- cupones ----------
+     Un cupón por pedido. Se valida aquí con las condiciones de carta.js y el pedido llega por
+     WhatsApp con el cupón y el descuento, para que el local lo confirme. */
+  var MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  function codigo(s) { return String(s || "").toUpperCase().replace(/\s+/g, ""); }
+  function cuponDe(cod) {
+    var k = codigo(cod);
+    return k ? (C.cupones || []).filter(function (c) { return c && codigo(c.codigo) === k; })[0] : null;
+  }
+  function fechaTexto(f) { var p = String(f).split("-"); return +p[2] + " de " + MESES[+p[1] - 1]; }
+  function listaY(a) { return a.length > 1 ? a.slice(0, -1).join(", ") + " y " + a[a.length - 1] : a.join(""); }
+  // "los martes", "los sábados"
+  function diasTexto(dias) {
+    return listaY(dias.map(function (d) { var t = DIAS_TXT[DIAS.indexOf(d)]; return t && (/o$/.test(t) ? t + "s" : t); }).filter(Boolean));
+  }
+  function catsTexto(ids) { return listaY(ids.map(function (id) { return CATS[id] && CATS[id].nombre; }).filter(Boolean)); }
+  function valorCupon(c) { return c.tipo === "monto" ? plata(c.valor) : (c.valor || 0) + "%"; }
+  function nombreCupon(c) { return c.nombre || valorCupon(c) + " de descuento"; }
+  function condicionesCupon(c) {
+    var t = [];
+    if (c.minimo) t.push("Pedido mínimo " + plata(c.minimo));
+    if (c.aplica && c.aplica.length) t.push("Solo en " + catsTexto(c.aplica));
+    if (c.modo === "retiro") t.push("Solo retiro en el local");
+    else if (c.modo === "delivery") t.push("Solo delivery");
+    if (c.dias && c.dias.length) t.push("Solo los " + diasTexto(c.dias));
+    if (c.tipo !== "monto" && c.tope) t.push("Hasta " + plata(c.tope) + " de descuento");
+    if (c.desde && c.desde > ahora().fecha) t.push("Desde el " + fechaTexto(c.desde));
+    if (c.hasta) t.push("Hasta el " + fechaTexto(c.hasta));
+    return t;
+  }
+  /* Si el cupón vale para el pedido de ahora y cuánto descuenta; si no, por qué */
+  function evaluarCupon(c) {
+    if (!c || c.activo === false) return { ok: false, motivo: "Este cupón ya no está disponible." };
+    var t = ahora();
+    if (c.desde && t.fecha < c.desde) return { ok: false, motivo: "Este cupón vale desde el " + fechaTexto(c.desde) + "." };
+    if (c.hasta && t.fecha > c.hasta) return { ok: false, motivo: "Este cupón venció el " + fechaTexto(c.hasta) + "." };
+    if (c.dias && c.dias.length && c.dias.indexOf(DIAS[t.dia]) < 0) return { ok: false, motivo: "Este cupón vale solo los " + diasTexto(c.dias) + "." };
+    if (c.modo && c.modo !== pedido.modo) return { ok: false, motivo: c.modo === "retiro" ? "Este cupón es solo para retiro en el local." : "Este cupón es solo para delivery." };
+    var sub = subtotal();
+    if (c.minimo && sub < c.minimo) return { ok: false, motivo: "Es para pedidos desde " + plata(c.minimo) + ": te faltan " + plata(c.minimo - sub) + "." };
+    var base = sub;
+    if (c.aplica && c.aplica.length) {
+      base = pedido.items.reduce(function (s, it) {
+        return s + (c.aplica.indexOf(PRODUCTOS[it.id].cat.id) >= 0 ? precioUnitario(it.id, it.conf) * it.cant : 0);
+      }, 0);
+      if (!base) return { ok: false, motivo: "Es para " + catsTexto(c.aplica) + ": agrega algo de ahí a tu pedido." };
+    }
+    var d = c.tipo === "monto" ? Math.min(c.valor || 0, base) : Math.round(base * (c.valor || 0) / 100);
+    if (c.tipo !== "monto" && c.tope) d = Math.min(d, c.tope);
+    return d > 0 ? { ok: true, descuento: d } : { ok: false, motivo: "Este cupón no tiene descuento." };
+  }
+  function cuponActual() { return pedido.cupon ? cuponDe(pedido.cupon) : null; }
+  function descuento() {
+    if (!pedido.cupon || !pedido.items.length) return 0;
+    var e = evaluarCupon(cuponActual());
+    return e.ok ? e.descuento : 0;
+  }
 
   /* ---------- datos del local en la página ---------- */
   function pintarDatos() {
@@ -499,11 +561,12 @@
   }
 
   /* ---------- pedido ---------- */
-  var pedido = { items: [], nombre: "", modo: "retiro", direccion: "", pago: "", ubicacion: null };
+  var pedido = { items: [], nombre: "", modo: "retiro", direccion: "", pago: "", cupon: "", ubicacion: null };
   (function cargar() {
     var g = leer(GUARDADO);
     if (!g || typeof g !== "object") return;
     ["nombre", "direccion", "pago"].forEach(function (k) { if (typeof g[k] === "string") pedido[k] = g[k]; });
+    if (typeof g.cupon === "string") pedido.cupon = codigo(g.cupon);
     if (g.modo === "delivery") pedido.modo = "delivery";
     if (Array.isArray(g.items)) {
       pedido.items = g.items.filter(function (it) {
@@ -514,7 +577,7 @@
     }
   })();
   function guardarPedido() {
-    guardar(GUARDADO, { items: pedido.items, nombre: pedido.nombre, modo: pedido.modo, direccion: pedido.direccion, pago: pedido.pago });
+    guardar(GUARDADO, { items: pedido.items, nombre: pedido.nombre, modo: pedido.modo, direccion: pedido.direccion, pago: pedido.pago, cupon: pedido.cupon });
   }
   /* Descarta opciones que ya no existen en la carta (por si cambió desde la última visita). */
   function limpiarConf(id, conf) {
@@ -573,7 +636,7 @@
     var barra = $("[data-barra]");
     barra.hidden = n === 0;
     document.body.classList.toggle("con-barra", n > 0);
-    $("[data-barra-total]").textContent = plata(subtotal());
+    $("[data-barra-total]").textContent = plata(subtotal() - descuento());
   }
   var avisoTimer;
   function avisar(html) {
@@ -949,8 +1012,34 @@
         '<input type="text" data-nota maxlength="140" placeholder="Deja una nota (opcional)" value="' + esc(it.nota) + '"></label>' +
       "</div></li>";
   }
+  var cuponMsg = "";
+  function cuponHtml() {
+    var hay = (C.cupones || []).some(function (c) { return c && c.codigo && c.activo !== false; });
+    if (pedido.cupon) {
+      var c = cuponActual();
+      var e = evaluarCupon(c);
+      return '<div class="cupon-pedido' + (e.ok ? " ok" : "") + '"><div><b>' + icono("cupon") + esc(pedido.cupon) + "</b>" +
+        "<span>" + esc(e.ok ? nombreCupon(c) + ": −" + plata(e.descuento) : e.motivo) + "</span></div>" +
+        '<button type="button" data-quitar-cupon aria-label="Quitar el cupón ' + esc(pedido.cupon) + '">Quitar</button></div>';
+    }
+    if (!hay) return "";
+    return '<div class="campo"><label class="campo-titulo" for="cupon-codigo">¿Tienes un cupón?</label><div class="cupon-fila">' +
+      '<input type="text" id="cupon-codigo" data-cupon-codigo maxlength="30" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="Escribe el código">' +
+      '<button class="cupon-aplicar" type="button" data-aplicar-cupon>Aplicar</button></div>' +
+      '<span class="campo-ayuda' + (cuponMsg ? " falta" : "") + '">' + esc(cuponMsg) + "</span></div>";
+  }
+  function aplicarCupon(cod) {
+    var c = cuponDe(cod);
+    if (!c || c.activo === false) return { ok: false, motivo: codigo(cod) ? "No encontramos ese cupón. Revisa que esté bien escrito." : "Escribe el código del cupón." };
+    pedido.cupon = codigo(c.codigo);
+    cuponMsg = "";
+    guardarPedido();
+    pintarContador(false);
+    pintarCupones();
+    return { ok: true, c: c };
+  }
   function formularioHtml() {
-    var html = '<div class="formulario">' +
+    var html = '<div class="formulario">' + cuponHtml() +
       '<label class="campo"><span class="campo-titulo">Tu nombre, para el pedido</span>' +
       '<input type="text" data-campo="nombre" autocomplete="given-name" maxlength="60" placeholder="Ej: Ana" value="' + esc(pedido.nombre) + '">' +
       '<span class="campo-ayuda" data-ayuda="nombre"></span></label>' +
@@ -1001,14 +1090,19 @@
     if (!pedido.items.length) { piePedido.innerHTML = ""; return; }
     var falta = faltaPedido();
     var sub = subtotal();
-    var fijo = pedido.modo === "delivery" && typeof N.valorDelivery === "number";
+    var desc = descuento();
+    var delivery = pedido.modo === "delivery";
+    var fijo = delivery && typeof N.valorDelivery === "number";
     var html = '<div class="totales">';
-    if (pedido.modo === "delivery") {
-      html += "<div><span>Subtotal referencial" + (fijo ? "" : " (sin delivery)") + "</span><b>" + plata(sub) + "</b></div>" +
-        "<div><span>Delivery</span><span>" + (fijo ? plata(N.valorDelivery) : esc(N.notaDelivery || "Por confirmar")) + "</span></div>" +
-        (fijo ? "<div><span>Total referencial</span><b>" + plata(sub + N.valorDelivery) + "</b></div>" : "");
+    if (!desc && !fijo) {
+      html += "<div><span>Subtotal referencial" + (delivery ? " (sin delivery)" : "") + "</span><b>" + plata(sub) + "</b></div>";
     } else {
-      html += "<div><span>Subtotal referencial</span><b>" + plata(sub) + "</b></div>";
+      html += "<div><span>Subtotal</span><span>" + plata(sub) + "</span></div>";
+    }
+    if (desc) html += '<div class="descuento"><span>Cupón ' + esc(pedido.cupon) + "</span><span>−" + plata(desc) + "</span></div>";
+    if (delivery) html += "<div><span>Delivery</span><span>" + (fijo ? plata(N.valorDelivery) : esc(N.notaDelivery || "Por confirmar")) + "</span></div>";
+    if (desc || fijo) {
+      html += "<div><span>Total referencial" + (delivery && !fijo ? " (sin delivery)" : "") + "</span><b>" + plata(sub - desc + (fijo ? N.valorDelivery : 0)) + "</b></div>";
     }
     html += "</div>" +
       '<p class="pedido-aviso">No pagas aquí: te confirmamos disponibilidad, modalidad y total por WhatsApp.' +
@@ -1066,6 +1160,15 @@
       cerrar(dlgPedido);
     } else if (el.hasAttribute("data-ubicacion")) {
       pedirUbicacion();
+    } else if (el.hasAttribute("data-aplicar-cupon")) {
+      var r = aplicarCupon($("[data-cupon-codigo]", cuerpoPedido).value);
+      if (!r.ok) cuponMsg = r.motivo;
+      pintarPedido();
+      if (!r.ok) $("[data-cupon-codigo]", cuerpoPedido).focus();
+    } else if (el.hasAttribute("data-quitar-cupon")) {
+      pedido.cupon = "";
+      cambioPedido();
+      pintarCupones();
     }
   });
   cuerpoPedido.addEventListener("input", function (e) {
@@ -1084,6 +1187,11 @@
     var t = e.target;
     if (t.name === "modo") { pedido.modo = t.value; cambioPedido(); }
     else if (t.name === "pago") { pedido.pago = t.value; cambioPedido(); }
+  });
+  cuerpoPedido.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || !e.target.hasAttribute("data-cupon-codigo")) return;
+    e.preventDefault();
+    $("[data-aplicar-cupon]", cuerpoPedido).click();
   });
   piePedido.addEventListener("click", function (e) {
     var b = e.target.closest("[data-falta]");
@@ -1146,9 +1254,12 @@
     });
     l.push("");
     var sub = subtotal();
-    if (pedido.modo === "delivery" && typeof N.valorDelivery === "number") {
+    var desc = descuento();
+    var fijo = pedido.modo === "delivery" && typeof N.valorDelivery === "number";
+    if (desc || fijo) {
       l.push("Subtotal: " + plata(sub));
-      l.push("Total referencial: " + plata(sub + N.valorDelivery));
+      if (desc) l.push("Cupón " + pedido.cupon + " (" + nombreCupon(cuponActual()) + "): −" + plata(desc));
+      l.push("Total referencial: " + plata(sub - desc + (fijo ? N.valorDelivery : 0)) + (pedido.modo === "delivery" && !fijo ? " + delivery" : ""));
     } else {
       l.push("Subtotal referencial: " + plata(sub));
     }
@@ -1166,6 +1277,7 @@
       if (personalizable(id)) abrirFicha(id, null);
       else agregarAlPedido(id, { cambios: [], elecciones: {}, textos: {} });
     } else if (t.hasAttribute("data-abrir-pedido")) {
+      cuponMsg = "";
       pintarPedido();
       abrir(dlgPedido);
     } else if (t.hasAttribute("data-cerrar")) {
@@ -1190,6 +1302,13 @@
       t.nextElementSibling.hidden = abierta;
       var fila = t.closest(".fila");
       if (fila) fila.classList.toggle("abierta", !abierta);
+    } else if (t.hasAttribute("data-usar-cupon")) {
+      var r = aplicarCupon(t.getAttribute("data-usar-cupon"));
+      if (r.ok) {
+        var e = evaluarCupon(r.c);
+        avisar("Cupón <b>" + esc(pedido.cupon) + "</b> " + (!pedido.items.length ? "listo: se descuenta en tu pedido."
+          : e.ok ? "aplicado: −" + plata(e.descuento) + "." : "guardado. " + esc(e.motivo)));
+      }
     } else if (t.hasAttribute("data-ocultar-estado")) {
       estadoOculto = true;
       pintarEstado();
@@ -1258,11 +1377,38 @@
     }).join("");
   }
 
+  /* ---------- sección de cupones ---------- */
+  function pintarCupones() {
+    var caja = $("[data-cupones]");
+    if (!caja) return;
+    var hoy = ahora().fecha;
+    var lista = (C.cupones || []).map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
+      return x.c && x.c.codigo && x.c.activo !== false && x.c.visible !== false && !(x.c.hasta && x.c.hasta < hoy);
+    });
+    caja.closest("section").hidden = !lista.length;
+    $$('a[href="#cupones"]').forEach(function (a) { a.hidden = !lista.length; });
+    caja.innerHTML = lista.map(function (x) {
+      var c = x.c;
+      var cod = codigo(c.codigo);
+      var cond = condicionesCupon(c);
+      var usado = pedido.cupon === cod;
+      return '<li class="cupon' + (usado ? " usado" : "") + '">' +
+        '<div class="cupon-valor"><b' + (valorCupon(c).length > 5 ? ' class="largo"' : "") + ">" + esc(valorCupon(c)) + "</b><span>de descuento</span></div>" +
+        '<div class="cupon-cuerpo"><h3' + ruta("cupones." + x.i + ".nombre") + ">" + esc(nombreCupon(c)) + "</h3>" +
+        (cond.length ? '<p class="cupon-cond">' + esc(cond.join(" · ")) + "</p>" : "") +
+        '<div class="cupon-pie"><span class="cupon-codigo">' + esc(cod) + "</span>" +
+        (usado ? '<span class="cupon-listo">' + icono("check") + "En tu pedido</span>"
+          : '<button class="cupon-usar" type="button" data-usar-cupon="' + esc(cod) + '">Usar cupón</button>') +
+        "</div></div></li>";
+    }).join("");
+  }
+
   /* ---------- inicio ---------- */
   function pintarTodo() {
     pintarDatos();
     pintarTextos();
     pintarArmado();
+    pintarCupones();
     pintarEstado();
     pintarDestacados();
     pintarCarta();
@@ -1276,7 +1422,7 @@
   if (!PREVIA) return;
   var alPanel = function (msg) { window.parent.postMessage(msg, location.origin); };
   var ZONAS = [["#inicio", "textos negocio", "Editar portada"], ["#carta", "carta", "Editar carta y precios"],
-    ["#arma", "armado", "Editar opciones para elegir"], ["#como-pedir", "textos", "Editar pasos"],
+    ["#cupones", "cupones", "Editar cupones"], ["#arma", "armado", "Editar opciones para elegir"], ["#como-pedir", "textos", "Editar pasos"],
     ["#ubicacion", "negocio horario", "Editar dirección y horario"], [".antojo", "textos", "Editar textos"],
     [".pie", "negocio textos", "Editar pie de página"]];
   var SOLO_TEXTO = (function () { var d = document.createElement("div"); d.contentEditable = "plaintext-only"; return d.contentEditable === "plaintext-only"; })();
@@ -1307,6 +1453,11 @@
       if (!editando) return;
       var chip = e.target.closest("[data-abrir-grupos]");
       var agregar = e.target.closest("[data-agregar]");
+      if (e.target.closest("[data-usar-cupon]")) {
+        e.preventDefault(); e.stopPropagation();
+        alPanel({ type: "pagina-abrir", grupos: ["cupones"] });
+        return;
+      }
       if (chip || agregar) {
         e.preventDefault(); e.stopPropagation();
         alPanel(chip ? { type: "pagina-abrir", grupos: chip.getAttribute("data-abrir-grupos").split(" ") }

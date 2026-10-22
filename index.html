@@ -31,6 +31,7 @@
     </a>
     <nav class="menu" aria-label="Secciones">
       <a href="#carta">Carta</a>
+      <a href="#cupones" hidden>Cupones</a>
       <a href="#arma">Arma tu roll</a>
       <a href="#como-pedir">Cómo pedir</a>
       <a href="#ubicacion" data-si="direccion">Ubicación</a>
@@ -102,6 +103,16 @@
         <span>¿Buscabas otra cosa?</span>
         <a data-wsp href="https://wa.me/56900000000" target="_blank" rel="noopener">Pregúntanos por WhatsApp <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </p>
+    </div>
+  </section>
+
+  <section class="cupones" id="cupones" aria-labelledby="cupones-titulo" hidden>
+    <div class="contenedor">
+      <div class="cupones-cabeza">
+        <h2 class="titulo-grande" id="cupones-titulo"><span data-texto="cupones.titulo">Cupones</span> <span class="acento" data-texto="cupones.destacado">de la semana</span></h2>
+        <p class="cupones-bajada" data-texto="cupones.bajada">Toca «Usar cupón» y el descuento se aplica solo en tu pedido. Un cupón por pedido.</p>
+      </div>
+      <ul class="cupones-lista" data-cupones></ul>
     </div>
   </section>
 

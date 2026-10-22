@@ -319,6 +319,57 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .carta-otra { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 24px; padding-top: 24px; border-top: 1px solid #d9d4d0; font-size: .82rem; color: var(--suave); }
 .carta-otra a { display: inline-flex; align-items: center; gap: 6px; color: var(--principal); font-weight: 700; text-decoration: none; }
 
+/* ---------- cupones ---------- */
+.cupones {
+  position: relative; padding: 90px 0 96px; color: var(--tinta);
+  background: repeating-linear-gradient(-28deg, rgba(18, 16, 22, .04) 0 2px, transparent 2px 14px), var(--amarillo);
+}
+.cupones-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px 40px; flex-wrap: wrap; }
+.cupones .titulo-grande .acento { color: var(--principal); }
+.cupones-bajada { max-width: 420px; font-size: .95rem; color: #3d3524; }
+.cupones-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: 20px; margin-top: 40px; }
+/* ticket: talón con el descuento, línea picada y muescas a los lados */
+.cupon { --talon: 132px; position: relative; display: grid; grid-template-columns: var(--talon) minmax(0, 1fr); background: var(--blanco); box-shadow: 0 16px 30px rgba(18, 16, 22, .16); }
+.cupon::before, .cupon::after { content: ""; position: absolute; left: calc(var(--talon) - 12px); width: 24px; height: 24px; border-radius: 50%; background: var(--amarillo); }
+.cupon::before { top: -12px; }
+.cupon::after { bottom: -12px; }
+.cupon-valor {
+  display: grid; place-content: center; justify-items: center; gap: 6px; padding: 22px 12px; text-align: center; color: var(--blanco);
+  background: linear-gradient(var(--blanco) 50%, transparent 0) right top / 2px 12px repeat-y, var(--principal);
+}
+.cupon-valor b { font: 800 3rem/.85 var(--titulo); letter-spacing: -.01em; }
+.cupon-valor b.largo { font-size: 2.3rem; }
+.cupon-valor span { font-size: .64rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.cupon-cuerpo { display: flex; flex-direction: column; gap: 8px; padding: 20px 20px 18px 24px; min-width: 0; }
+.cupon-cuerpo h3 { font: 700 1.5rem/1.02 var(--titulo); text-transform: uppercase; }
+.cupon-cond { font-size: .8rem; color: var(--suave); }
+.cupon-pie { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 10px; }
+.cupon-codigo { padding: 8px 10px 7px; border: 1.5px dashed var(--principal); color: var(--principal); font: 700 .84rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+.cupon-usar { min-height: 40px; padding: 8px 16px; border: 0; background: var(--tinta-2); color: var(--blanco); font-weight: 700; font-size: .85rem; transition: background .2s; }
+.cupon-usar:hover { background: var(--principal); }
+.cupon-listo { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .85rem; color: #19733e; }
+.cupon.usado { box-shadow: 0 0 0 3px var(--tinta-2), 0 16px 30px rgba(18, 16, 22, .16); }
+
+/* cupón dentro del pedido */
+.cupon-fila { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.cupon-fila input {
+  width: 100%; height: 44px; padding: 0 12px; border: 1px solid #ddd8d3; background: var(--blanco);
+  font-size: .92rem; letter-spacing: .06em; text-transform: uppercase; color: var(--texto);
+}
+.cupon-fila input::placeholder { text-transform: none; letter-spacing: 0; }
+.cupon-fila input:focus { outline: 0; border-color: var(--acento); }
+.cupon-aplicar { padding: 0 18px; border: 0; background: var(--tinta-2); color: var(--blanco); font-weight: 700; font-size: .88rem; }
+.cupon-aplicar:hover { background: var(--principal); }
+.cupon-pedido { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1.5px dashed var(--acento-borde); background: var(--blanco); }
+.cupon-pedido.ok { border-color: #19733e; }
+.cupon-pedido > div { display: grid; gap: 3px; min-width: 0; }
+.cupon-pedido b { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; letter-spacing: .06em; }
+.cupon-pedido b .icono { color: var(--principal); }
+.cupon-pedido span { font-size: .8rem; color: var(--error); }
+.cupon-pedido.ok span { color: #19733e; }
+.cupon-pedido button { flex: none; padding: 4px 0; border: 0; background: none; color: var(--suave); text-decoration: underline; font-size: .8rem; }
+.totales .descuento { color: #19733e; }
+
 /* ---------- cómo pedir ---------- */
 .pasos { padding: 100px 0; border-bottom: 1px solid var(--linea); }
 .pasos-grilla { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
@@ -610,6 +661,13 @@ html.editando .brillo[contenteditable] { -webkit-text-fill-color: currentColor; 
   .tarjeta-cuerpo .fila-nombre { font-size: 1.2rem; }
   .tarjeta-pie { flex-direction: column; align-items: flex-start; }
   .pasos { padding: 76px 0; }
+  .cupones { padding: 64px 0 70px; }
+  .cupones-lista { margin-top: 28px; gap: 16px; }
+  .cupon { --talon: 108px; }
+  .cupon-valor b { font-size: 2.5rem; }
+  .cupon-valor b.largo { font-size: 1.85rem; }
+  .cupon-cuerpo { padding: 16px 14px 14px 18px; }
+  .cupon-cuerpo h3 { font-size: 1.3rem; }
   .ubicacion { padding: 70px 0 40px; }
   .mapa-marco { height: 280px; }
   .antojo { padding: 90px 0; }

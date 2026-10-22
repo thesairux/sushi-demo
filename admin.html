@@ -324,7 +324,8 @@ const TEXTOS = {
   pasos: { titulo: "Haz tu pedido", destacado: "en 3 pasos.", bajada: "", lista: [{ titulo: "", texto: "" }, { titulo: "", texto: "" }, { titulo: "", texto: "" }] },
   ubicacion: { titulo: "Te esperamos" },
   antojo: { titulo: "¿Qué se te", destacado: "antoja hoy?" },
-  pie: { nota: "" }
+  pie: { nota: "" },
+  cupones: { titulo: "Cupones", destacado: "de la semana", bajada: "" }
 };
 
 const $ = s => document.querySelector(s);
@@ -437,6 +438,8 @@ function withDefaults(site) {
     sec.categorias.forEach(cat => { if (!Array.isArray(cat.productos)) cat.productos = []; });
   });
   if (!Array.isArray(s.personalizacion)) s.personalizacion = [];
+  if (!Array.isArray(s.cupones)) s.cupones = [];
+  s.cupones.forEach(c => { ["dias", "aplica"].forEach(k => { if (!Array.isArray(c[k])) c[k] = []; }); });
   s.personalizacion.forEach(g => { if (!Array.isArray(g.opciones)) g.opciones = []; });
   const t = s.textos && typeof s.textos === "object" ? s.textos : {};
   Object.keys(TEXTOS).forEach(k => { t[k] = Object.assign(clone(TEXTOS[k]), t[k]); });
@@ -596,7 +599,8 @@ const SVG = {
   roll: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/>',
   shop: '<path d="M4 9.5 5.5 4h13L20 9.5M4 9.5h16M4 9.5V20h16V9.5M9 20v-5h6v5"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
-  text: '<path d="M5 6h14M12 6v13M8.5 19h7"/>'
+  text: '<path d="M5 6h14M12 6v13M8.5 19h7"/>',
+  cupon: '<path d="M3.5 7h17v3a2 2 0 0 0 0 4v3h-17v-3a2 2 0 0 0 0-4Z"/><path d="M10 7.5v1.5M10 11.25v1.5M10 15v1.5"/>'
 };
 
 function field(label, path, o = {}) {
@@ -750,6 +754,40 @@ function armadoBody() {
     <div class="adds"><button class="add" type="button" data-action="add-group">${SVG.plus}Agregar grupo de opciones</button></div>`;
 }
 
+/* Cupones: un código por cupón; lo demás son condiciones opcionales */
+const MODOS_CUPON = [["", "Retiro y delivery"], ["retiro", "Solo retiro en el local"], ["delivery", "Solo delivery"]];
+function cuponesBody() {
+  const cats = [];
+  state.secciones.forEach(sec => sec.categorias.forEach(c => cats.push(c)));
+  const lista = (base, clave, opciones, marcadas) => `<div class="checks">${opciones.map(([v, t]) =>
+    `<label class="check"><input type="checkbox" data-lista-de="${base}.${clave}" value="${esc(v)}" ${marcadas.includes(v) ? "checked" : ""}>${esc(t)}</label>`).join("")}</div>`;
+  const items = state.cupones.map((c, i) => {
+    const base = `cupones.${i}`;
+    const monto = c.tipo === "monto";
+    return `<div class="item">
+      <div class="item-head"><strong data-cabeza="codigo">${esc(String(c.codigo || "").toUpperCase() || "Cupón nuevo")}</strong>${tools("cupones", i, state.cupones.length, "cupón")}</div>
+      <div class="dos">${field("Código", `${base}.codigo`, { ph: "BIENVENIDA", hint: "Lo que escribe el cliente", type: "url" })}
+        <label class="f">Tipo de descuento<small>Porcentaje o pesos</small><select class="in" data-set="${base}.tipo">
+          <option value="porcentaje" ${monto ? "" : "selected"}>Porcentaje (%)</option><option value="monto" ${monto ? "selected" : ""}>Monto fijo ($)</option></select></label></div>
+      ${field("Descripción", `${base}.nombre`, { ph: "10% en tu primer pedido", hint: "Así aparece en la página y en el pedido" })}
+      <div class="dos">${field(monto ? "Descuento en pesos" : "Descuento en %", `${base}.valor`, { num: "entero", ph: monto ? "2000" : "10" })}
+        ${field("Pedido mínimo", `${base}.minimo`, { num: "opcional", ph: "Sin mínimo" })}</div>
+      ${monto ? "" : field("Descuento máximo", `${base}.tope`, { num: "opcional", ph: "Sin máximo", hint: "En pesos. Ej: 10% hasta $5.000" })}
+      <div class="dos"><label class="f">Desde<input class="in" type="date" data-path="${base}.desde" value="${esc(c.desde || "")}"></label>
+        <label class="f">Hasta<input class="in" type="date" data-path="${base}.hasta" value="${esc(c.hasta || "")}"></label></div>
+      <label class="f">Vale para<select class="in" data-set="${base}.modo">${MODOS_CUPON.map(([v, t]) => `<option value="${v}" ${(c.modo || "") === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+      <div class="f">Días<small>Sin marcar, vale todos los días</small></div>
+      ${lista(base, "dias", DIAS, c.dias)}
+      <div class="f">Solo en estas categorías<small>Sin marcar, descuenta sobre todo el pedido</small></div>
+      ${lista(base, "aplica", cats.map(k => [k.id, k.nombre || "Categoría"]), c.aplica)}
+      <div class="checks">${check("Activo", `${base}.activo`, { inverse: true })}${check("Mostrar en la página", `${base}.visible`, { inverse: true })}</div>
+    </div>`;
+  }).join("");
+  return `<p class="note">El cliente toca «Usar cupón» en la página o escribe el código en su pedido, y el descuento se resta del total. Un cupón por pedido; cada pedido te llega por WhatsApp con el cupón para que lo confirmes. Los que no se muestran en la página sirven para redes o volantes, pero alguien que revise el código de la página podría verlos.</p>
+    ${items || '<p class="empty">Todavía no hay cupones.</p>'}
+    <div class="adds"><button class="add" type="button" data-action="add-cupon">${SVG.plus}Agregar cupón</button></div>`;
+}
+
 function horarioBody() {
   const fechas = state.diasCerrados.map((f, i) => `<div class="fecha">
       <input class="in" type="date" data-path="diasCerrados.${i}" value="${esc(f)}" aria-label="Día sin atención ${i + 1}">
@@ -772,6 +810,10 @@ const GROUPS = [
       const n = state.personalizacion.map(g => g.nombre).filter(Boolean);
       return n.length ? n.slice(0, 4).join(", ") + (n.length > 4 ? "…" : "") : "Agregados, punto de la carne, rolls…";
     }, body: armadoBody },
+  { id: "cupones", title: "Cupones", icon: SVG.cupon, sub: () => {
+      const n = state.cupones.filter(c => c.activo !== false).length;
+      return n ? plural(n, "cupón activo", "cupones activos") : "Descuentos con código";
+    }, body: cuponesBody },
   { id: "negocio", title: "Local y contacto", icon: SVG.shop, sub: () => "Nombre, colores, WhatsApp, dirección y delivery", body: () =>
       field("Nombre del local", "negocio.nombre") +
       field("Frase corta", "negocio.lema", { ph: "Sushi, burgers y más" }) +
@@ -795,6 +837,7 @@ const GROUPS = [
       return `<p class="note">También los puedes cambiar tocándolos en la página.</p>
         ${par("textos.portada", "Portada")}${field("Texto de la portada", "textos.portada.bajada", { area: true, rows: 3 })}
         ${par("textos.carta", "Carta")}${field("Texto de la carta", "textos.carta.bajada", { area: true, rows: 2 })}
+        ${par("textos.cupones", "Cupones")}${field("Texto de los cupones", "textos.cupones.bajada", { area: true, rows: 2 })}
         ${par("textos.arma", "Arma tu roll")}
         ${par("textos.pasos", "Cómo pedir")}${field("Texto de cómo pedir", "textos.pasos.bajada", { area: true, rows: 2 })}
         ${t.pasos.lista.map((p, i) => `<div class="item"><strong>Paso ${i + 1}</strong>${field("Título", `textos.pasos.lista.${i}.titulo`)}${field("Texto", `textos.pasos.lista.${i}.texto`, { area: true, rows: 2 })}</div>`).join("")}
@@ -825,7 +868,7 @@ groupsEl.addEventListener("toggle", e => {
   if (!g || e.target !== g) return;
   if (g.open) {
     openGroups.add(g.dataset.group);
-    const zona = { carta: "carta", armado: "armado", negocio: "negocio", horario: "horario", textos: "textos" }[g.dataset.group];
+    const zona = { carta: "carta", armado: "armado", cupones: "cupones", negocio: "negocio", horario: "horario", textos: "textos" }[g.dataset.group];
     toPage({ type: "pagina-ir", grupo: zona });
   } else openGroups.delete(g.dataset.group);
 }, true);
@@ -851,8 +894,10 @@ groupsEl.addEventListener("input", e => {
       v = Number.isFinite(n) ? n : (el.dataset.num === "entero" ? "" : null);
     }
     setPath(state, el.dataset.path, v);
-    const head = el.closest(".item") && el.dataset.path.endsWith(".nombre") && el.closest(".item").querySelector(":scope > .item-head > strong");
-    if (head) head.textContent = el.value || "Producto nuevo";
+    const head = el.closest(".item") && el.closest(".item").querySelector(":scope > .item-head > strong");
+    const campo = head && (head.dataset.cabeza || "nombre");
+    if (campo === "codigo" && el.dataset.path.endsWith(".codigo")) head.textContent = el.value.toUpperCase().replace(/\s+/g, "") || "Cupón nuevo";
+    else if (campo === "nombre" && el.dataset.path.endsWith(".nombre")) head.textContent = el.value || "Producto nuevo";
   } else return;
   markDirty();
   pushSoon();
@@ -885,6 +930,13 @@ groupsEl.addEventListener("change", e => {
     else Object.assign(g, { tipo: "extra", min: 0, max: 10 });
     markDirty(); renderEditor(); pushSite();
   }
+  if (el.dataset.set) { setPath(state, el.dataset.set, el.value); markDirty(); renderEditor(); pushSite(); }
+  if (el.dataset.listaDe) {
+    const lista = getPath(state, el.dataset.listaDe).filter(v => v !== el.value);
+    if (el.checked) lista.push(el.value);
+    setPath(state, el.dataset.listaDe, lista);
+    markDirty(); pushSite();
+  }
   if (el.type === "date") { setPath(state, el.dataset.path, el.value); markDirty(); pushSite(); }
   if (el.type === "file") handleFiles(el);
 });
@@ -896,7 +948,7 @@ groupsEl.addEventListener("click", e => {
   if (a === "up" || a === "down" || a === "del") {
     const list = getPath(state, b.dataset.list), i = +b.dataset.i;
     if (a === "del") {
-      const que = { producto: "este producto", "categoría": "esta categoría y sus productos", "sección": "esta sección y todo lo que tiene", "opción": "esta opción", grupo: "este grupo de opciones (se quita de todos los productos)" }[b.dataset.what] || "esto";
+      const que = { producto: "este producto", "categoría": "esta categoría y sus productos", "sección": "esta sección y todo lo que tiene", "opción": "esta opción", "cupón": "este cupón", grupo: "este grupo de opciones (se quita de todos los productos)" }[b.dataset.what] || "esto";
       if (!confirm(`¿Eliminar ${que}?`)) return;
       list.splice(i, 1);
     } else {
@@ -912,6 +964,8 @@ groupsEl.addEventListener("click", e => {
     state.secciones.push({ nombre: "Nueva sección", categorias: [{ id: nuevoId("c"), nombre: "Nueva categoría", productos: [] }] });
   } else if (a === "add-option") {
     getPath(state, b.dataset.path).push({ id: nuevoId("o"), nombre: "", precio: 0 });
+  } else if (a === "add-cupon") {
+    state.cupones.push({ codigo: "", nombre: "", tipo: "porcentaje", valor: "", dias: [], aplica: [] });
   } else if (a === "add-group") {
     state.personalizacion.push({ id: nuevoId("g"), nombre: "Nuevo grupo", tipo: "extra", min: 0, max: 10, opciones: [{ id: nuevoId("o"), nombre: "", precio: 0 }] });
   } else if (a === "clear-tema") {
@@ -1039,6 +1093,26 @@ function cleanSite(vista) {
       if (o.disponible !== false) delete o.disponible;
     });
   });
+  const categorias = [];
+  s.secciones.forEach(sec => sec.categorias.forEach(c => categorias.push(c.id)));
+  const dias = DIAS.map(([k]) => k);
+  s.cupones.forEach(c => {
+    c.codigo = String(c.codigo || "").toUpperCase().replace(/\s+/g, "");
+    c.nombre = String(c.nombre || "").trim();
+    if (!c.nombre) delete c.nombre;
+    c.tipo = c.tipo === "monto" ? "monto" : "porcentaje";
+    if (typeof c.valor !== "number") c.valor = vista ? 0 : c.valor;
+    ["minimo", "tope"].forEach(k => { if (typeof c[k] !== "number" || c[k] <= 0) delete c[k]; });
+    if (c.tipo === "monto") delete c.tope;
+    ["desde", "hasta"].forEach(k => { if (!/^\d{4}-\d{2}-\d{2}$/.test(c[k] || "")) delete c[k]; });
+    c.dias = (c.dias || []).filter(d => dias.includes(d));
+    c.aplica = (c.aplica || []).filter(id => categorias.includes(id));
+    ["dias", "aplica"].forEach(k => { if (!c[k].length) delete c[k]; });
+    if (c.modo !== "retiro" && c.modo !== "delivery") delete c.modo;
+    if (c.activo !== false) delete c.activo;
+    if (c.visible !== false) delete c.visible;
+  });
+  if (!s.cupones.length) delete s.cupones;
   return s;
 }
 /* Lo que impide publicar, explicado para corregirlo */
@@ -1054,6 +1128,15 @@ function problema(site) {
   for (const g of site.personalizacion) {
     if (!String(g.nombre || "").trim()) return "Hay un grupo sin nombre en «Opciones para elegir».";
     if ((g.min || 0) > 0 && !g.opciones.some(o => o.disponible !== false)) return `El grupo «${g.nombre}» no tiene opciones disponibles para elegir.`;
+  }
+  const codigos = new Set();
+  for (const c of site.cupones || []) {
+    if (!c.codigo) return "Hay un cupón sin código en «Cupones».";
+    if (codigos.has(c.codigo)) return `El código ${c.codigo} está repetido en «Cupones».`;
+    codigos.add(c.codigo);
+    if (typeof c.valor !== "number" || c.valor <= 0) return `Falta el descuento del cupón ${c.codigo}.`;
+    if (c.tipo === "porcentaje" && c.valor > 100) return `El cupón ${c.codigo} no puede descontar más de 100%.`;
+    if (c.desde && c.hasta && c.desde > c.hasta) return `En el cupón ${c.codigo}, «Desde» queda después de «Hasta».`;
   }
   return null;
 }
