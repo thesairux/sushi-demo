@@ -1,0 +1,1100 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#121014">
+<meta name="color-scheme" content="dark">
+<title>Panel de Demo</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#121014;
+  --bg-deep:#0a090b;
+  --card:#1d1a20;
+  --card-2:#171519;
+  --field:#0e0d10;
+  --line:rgba(255,255,255,.1);
+  --line-2:rgba(255,255,255,.18);
+  --text:#f1edf2;
+  --muted:#b3acb7;
+  --red:#d01c23;
+  --red-hi:#e3242b;
+  --red-soft:#ff8a84;
+  --yellow:#ffcc1f;
+  --danger:#ff8a7a;
+  --ok:#3ccf72;
+  --top:64px;
+  --drawer-w:480px;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:1rem;line-height:1.5;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+[hidden]{display:none!important}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+a{color:var(--red-soft)}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:44px;padding:.6rem 1.05rem;border-radius:999px;border:1.5px solid var(--line-2);
+  background:transparent;font-weight:700;cursor:pointer;text-decoration:none;color:var(--text);white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.btn:hover{border-color:rgba(255,255,255,.4)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:var(--red-hi);border-color:var(--red-hi)}
+.btn.small{min-height:38px;padding:.4rem .85rem;font-size:.92rem}
+.btn[aria-pressed="true"]{background:rgba(255,204,31,.12);border-color:var(--yellow);color:#fff}
+.btn svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ Ingreso ============ */
+.login{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:3rem 1rem 4rem;
+  background:
+    radial-gradient(85% 55% at 50% -8%,rgba(208,28,35,.5) 0%,rgba(120,14,20,.25) 38%,transparent 72%),
+    linear-gradient(180deg,#1c1012 0%,#120f12 55%,#0d0b0d 100%)}
+.login-box{width:min(540px,100%);text-align:center}
+.login-logo{display:block;width:min(300px,80%);height:auto;margin:0 auto .6rem}
+.login-sub{margin:.2rem 0 2rem;color:#ddd5de;font-size:1.15rem}
+.login-card{text-align:left;padding:1.8rem 1.8rem 1.9rem;border-radius:22px;background:#fff;color:#18141a;box-shadow:0 34px 70px -24px rgba(0,0,0,.7)}
+.login-card :focus-visible{outline-color:var(--red)}
+.lf{display:block;margin:0 0 .55rem;font-weight:700;font-size:1.06rem}
+.lin{display:block;width:100%;height:60px;padding:0 1rem;border-radius:12px;border:2px solid #cfc8cf;background:#fff;color:#18141a;font-size:17px;transition:border-color .15s,box-shadow .15s}
+.lin:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 4px rgba(208,28,35,.18)}
+.pass{position:relative;margin-top:.55rem}
+.pass .lin{padding-right:3.75rem}
+.eye{position:absolute;top:50%;right:6px;display:grid;place-items:center;width:48px;height:48px;transform:translateY(-50%);border:0;border-radius:10px;background:none;color:#5a5260;cursor:pointer}
+.eye:hover{background:#f3eef3}
+.eye svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lgap{height:1.4rem}
+.lbtn{display:block;width:100%;height:64px;margin-top:1.8rem;border:0;border-radius:12px;background:var(--red);color:#fff;font:600 1.2rem/1 var(--body);cursor:pointer;transition:background-color .15s,transform .1s}
+.lbtn:hover{background:var(--red-hi)}
+.lbtn:active{transform:translateY(1px)}
+.lbtn:disabled{opacity:.7;cursor:default}
+.login .msg{margin:1rem 0 0;color:#b3261e;font-weight:600;text-align:center}
+.login .msg:empty{display:none}
+.forgot{display:block;margin:1.35rem auto 0;padding:.25rem;border:0;background:none;color:var(--red);font:500 1.08rem/1.3 var(--body);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.forgot-help{margin:1rem 0 0;padding:1rem 1.1rem;border-radius:12px;background:#fbf0f0;color:#3d2f33;font-size:.96rem;line-height:1.55}
+.forgot-help b{color:#18141a}
+@media (max-width:480px){
+  .login{padding-top:2rem}
+  .login-card{padding:1.4rem 1.25rem 1.5rem;border-radius:18px}
+}
+
+/* ============ Editor ============ */
+.studio{position:fixed;inset:0;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-rows:var(--top) auto minmax(0,1fr);
+  grid-template-areas:"brand mid actions side" "hint hint hint hint" "stage stage stage stage";background:var(--bg)}
+.tb-brand{grid-area:brand;display:flex;align-items:center;gap:.7rem;padding:0 1rem}
+.tb-brand img{height:46px;width:auto;flex:none}
+.tb-brand small{display:block;color:var(--muted);font-size:.84rem;white-space:nowrap}
+.tb-mid{grid-area:mid;display:flex;align-items:center;padding-left:.75rem}
+.seg{display:inline-flex;padding:3px;border-radius:999px;border:1px solid var(--line);background:var(--card-2)}
+.seg button{display:inline-flex;align-items:center;gap:.4rem;min-height:36px;padding:.3rem .8rem;border:0;border-radius:999px;background:none;color:var(--muted);font-weight:600;font-size:.88rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--red);color:#fff}
+.seg svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tb-actions{grid-area:actions;display:flex;align-items:center;justify-content:flex-end;gap:.5rem;min-width:0;padding:0 .5rem 0 1rem}
+.tb-actions .btn{flex:none}
+.tb-side{grid-area:side;display:flex;align-items:center;gap:.4rem;padding:0 1rem 0 .25rem}
+.status{display:flex;flex:0 1 auto;align-items:center;gap:.5rem;margin-right:.35rem;font-size:.9rem;color:var(--muted);min-width:0}
+.status i{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+.status.dirty i{background:var(--yellow);box-shadow:0 0 8px rgba(255,204,31,.7)}
+.status.ok i{background:var(--ok)}
+.status span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.hint{grid-area:hint;display:flex;align-items:center;gap:.8rem;padding:.6rem 1rem;background:#2a1416;border-block:1px solid rgba(255,138,132,.25);font-size:.94rem;color:#f3e3e4}
+.hint > svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--yellow);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hint p{flex:1;margin:0}
+.hint b{color:#fff}
+.hint mark{padding:.05rem .45rem;border-radius:999px;background:var(--yellow);color:#1b1405;font-weight:700;white-space:nowrap}
+
+.stage{grid-area:stage;position:relative;display:flex;justify-content:center;min-height:0;background:var(--bg-deep);transition:padding-right .28s cubic-bezier(.2,.8,.2,1)}
+.frame-wrap{position:relative;width:100%;height:100%;transition:width .3s,padding .3s}
+.frame-wrap iframe{display:block;width:100%;height:100%;border:0;background:var(--bg)}
+.studio.phone .frame-wrap{width:min(402px,100%);padding:18px 0}
+.studio.phone .frame-wrap iframe{border-radius:30px;border:8px solid #2a252d;box-shadow:0 30px 60px -20px rgba(0,0,0,.8)}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-weight:600;pointer-events:none}
+
+/* Panel lateral con todas las opciones */
+.drawer{position:fixed;z-index:30;top:var(--top);right:0;bottom:0;display:flex;flex-direction:column;width:min(var(--drawer-w),100%);background:var(--bg);
+  border-left:1px solid var(--line-2);box-shadow:-24px 0 48px -24px rgba(0,0,0,.7);transform:translateX(102%);visibility:hidden;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s .28s}
+.drawer.open{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+@media (min-width:1180px){.studio.drawer-open .stage{padding-right:var(--drawer-w)}}
+.drawer-head{display:flex;align-items:center;gap:.6rem;padding:.75rem .9rem .75rem 1.1rem;border-bottom:1px solid var(--line)}
+.drawer-head .t{flex:1;min-width:0}
+.drawer-head h2{margin:0;font:800 1.6rem/1.05 var(--display);text-transform:uppercase;letter-spacing:.01em}
+.drawer-head h2:focus{outline:none}
+.drawer-head small{display:block;margin-top:2px;color:var(--muted);font-size:.86rem}
+.back{display:inline-flex;align-items:center;gap:.3rem;margin:0 0 .35rem -.2rem;padding:.15rem .2rem;border:0;background:none;color:var(--red-soft);font-weight:600;font-size:.9rem;cursor:pointer}
+.back svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.drawer-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:1rem 1rem 2.5rem}
+.scrim{position:fixed;inset:0;z-index:29;background:rgba(5,3,6,.55)}
+.drawer-foot{margin:1.5rem 0 0;text-align:center;font-weight:600}
+
+/* Formularios del panel */
+label.f,.f{display:grid;gap:.35rem;font-weight:600;font-size:.95rem;min-width:0}
+.f small{font-weight:400;color:var(--muted)}
+input.in,textarea.in,select.in{width:100%;min-height:46px;padding:.65rem .8rem;border-radius:10px;border:1.5px solid var(--line-2);background:var(--field);font-size:16px}
+textarea.in{resize:vertical;line-height:1.45}
+input.in[type="color"]{padding:4px;cursor:pointer}
+input.in:focus,textarea.in:focus,select.in:focus{border-color:var(--red-soft);outline:none;box-shadow:0 0 0 3px rgba(255,138,132,.18)}
+.dos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.check{display:flex;align-items:center;gap:.6rem;min-height:40px;font-weight:600;font-size:.95rem;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--red);flex:none}
+.checks{display:flex;flex-wrap:wrap;gap:.25rem 1.2rem}
+.group{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:.75rem;overflow:hidden}
+.group > summary{list-style:none;display:flex;align-items:center;gap:.9rem;padding:.95rem 1rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.group > summary::-webkit-details-marker{display:none}
+.group > summary .t{display:grid;flex:1}
+.group > summary strong{font-size:1.05rem}
+.group > summary small{color:var(--muted)}
+.group > summary .chev{width:20px;height:20px;flex:none;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.group[open] > summary .chev{transform:rotate(180deg)}
+.gi{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:10px;background:var(--card-2);color:var(--yellow)}
+.gi svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gbody{display:grid;gap:1rem;padding:.25rem 1rem 1.2rem;border-top:1px solid var(--line)}
+.gbody > .note{margin:.75rem 0 0;color:var(--muted);font-size:.93rem}
+.fgroup > .gbody{padding:0;border:0}
+.fgroup > .gbody > .note:first-child{margin-top:0}
+.fgroup h3{display:flex;align-items:center;gap:.7rem;margin:0 0 .9rem;font-size:1.05rem}
+.fgroup + .fgroup{margin-top:1.6rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+.item{display:grid;gap:.85rem;padding:1rem;border-radius:12px;background:var(--card-2);border:1px solid var(--line);min-width:0}
+.fgroup .item{background:var(--card)}
+.item .item{background:var(--card)}
+.fgroup .item .item{background:var(--card-2)}
+.item.resaltado{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(255,204,31,.25)}
+.item-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;min-width:0}
+.item-head strong{font-size:.98rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-head .tag{font-size:.8rem;font-weight:700;color:var(--yellow);letter-spacing:.04em;text-transform:uppercase}
+.tools{display:flex;gap:.35rem;flex:none}
+.mini{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line-2);background:transparent;cursor:pointer;color:var(--text)}
+.mini:disabled{opacity:.3;cursor:default}
+.mini svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.mini.del{color:var(--danger)}
+.adds{display:flex;flex-wrap:wrap;gap:.6rem}
+.add{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:.55rem 1rem;border-radius:999px;border:1.5px dashed var(--line-2);
+  background:transparent;color:var(--text);font-weight:700;cursor:pointer;position:relative}
+.add:hover{border-color:var(--red-soft)}
+.add svg{width:18px;height:18px;fill:none;stroke:var(--yellow);stroke-width:2.4;stroke-linecap:round}
+.one-photo{display:grid;gap:.6rem;max-width:320px}
+.one-photo img{display:block;width:100%;aspect-ratio:1000/725;object-fit:cover;border-radius:10px;background:var(--field)}
+.one-photo img.missing{object-fit:contain;padding:1rem;opacity:.35}
+.empty{margin:0;padding:1rem;border-radius:10px;border:1.5px dashed var(--line-2);color:var(--muted);text-align:center;font-size:.93rem}
+.row{display:flex;flex-wrap:wrap;gap:.5rem}
+.opcion{display:grid;grid-template-columns:minmax(0,1fr) 7.5rem;gap:.5rem;align-items:end;padding:.75rem;border-radius:10px;border:1px solid var(--line);background:var(--card-2)}
+.opcion .checks{grid-column:1 / -1}
+.opcion .tools{grid-column:1 / -1;justify-content:flex-end}
+.dia{display:grid;grid-template-columns:6.5rem minmax(0,1fr);align-items:center;gap:.6rem}
+.dia span{font-weight:600}
+.fecha{display:flex;gap:.5rem;align-items:center}
+.fecha input{flex:1}
+.cat-title{margin:.5rem 0 0;font:800 1.35rem/1 var(--display);text-transform:uppercase;letter-spacing:.02em;color:var(--yellow)}
+
+/* Celular: acciones abajo, al alcance del pulgar; el panel sube desde abajo */
+@media (max-width:860px){
+  :root{--top:60px}
+  .studio{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:var(--top) auto minmax(0,1fr) auto;
+    grid-template-areas:"brand side" "hint hint" "stage stage" "actions actions"}
+  .tb-mid{display:none}
+  .tb-brand img{height:40px}
+  .tb-side{padding-right:.75rem}
+  .tb-actions{display:grid;grid-template-columns:auto 1fr 1fr;gap:.5rem;padding:.6rem .75rem calc(.6rem + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg)}
+  .tb-actions .status{grid-column:1 / -1;margin:0}
+  .tb-actions .btn{width:100%}
+  .hint{font-size:.88rem;padding:.55rem .75rem}
+  .drawer{top:auto;left:0;width:100%;height:88vh;height:88dvh;border-left:0;border-top:1px solid var(--line-2);border-radius:20px 20px 0 0;transform:translateY(102%)}
+  .drawer::before{content:"";position:absolute;top:7px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:var(--line-2)}
+  .drawer-head{padding-top:1.1rem}
+}
+@media (max-width:420px){.dos{grid-template-columns:1fr}}
+@media (min-width:861px){.scrim{display:none}}
+.lbl-short{display:none}
+@media (max-width:1279px){.seg-l{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.seg button{padding-inline:.65rem}}
+@media (max-width:1180px){.lbl-long{display:none}.lbl-short{display:inline}#client-lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+@media (min-width:861px) and (max-width:1023px){.tb-brand small{display:none}}
+
+/* Aviso */
+.toast{position:fixed;left:50%;bottom:calc(1.5rem + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:50;width:min(560px,100% - 2rem);
+  padding:.85rem 1rem;border-radius:12px;background:#2b2530;border:1px solid var(--line-2);box-shadow:0 12px 30px -10px rgba(0,0,0,.6);
+  font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:#4a1f24;border-color:rgba(255,138,122,.4)}
+@media (max-width:860px){.toast{bottom:calc(8.5rem + env(safe-area-inset-bottom))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ Ingreso ============ -->
+<main class="login" id="login">
+  <div class="login-box">
+    <img class="login-logo" id="logo" src="img/logo.png" width="400" height="240" alt="Demo">
+    <p class="login-sub">Panel de administración</p>
+
+    <form class="login-card" id="login-form" autocomplete="on">
+      <label class="lf" for="user">Usuario</label>
+      <input class="lin" id="user" name="username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+      <div class="lgap"></div>
+      <label class="lf" for="pass">Contraseña</label>
+      <div class="pass">
+        <input class="lin" id="pass" name="password" type="password" autocomplete="current-password" required>
+        <button class="eye" id="eye" type="button" aria-label="Mostrar contraseña" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="eye-open" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle class="eye-open" cx="12" cy="12" r="3"/><path class="eye-shut" d="M3 3l18 18M10.6 5.1A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4M6.6 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.4M9.9 9.9a3 3 0 0 0 4.2 4.2" hidden/></svg>
+        </button>
+      </div>
+      <button class="lbtn" id="login-btn" type="submit">Entrar</button>
+      <p class="msg" id="login-msg" role="alert"></p>
+      <button class="forgot" id="forgot" type="button" aria-expanded="false" aria-controls="forgot-help">¿Olvidaste tu contraseña?</button>
+      <div class="forgot-help" id="forgot-help" hidden>
+        La contraseña se cambia en <b>Vercel</b>: entra a tu proyecto, ve a <b>Settings → Environment Variables</b>,
+        cambia <b>ADMIN_PASSWORD</b> y vuelve a publicar en <b>Deployments → Redeploy</b>.
+        Si no tienes acceso a Vercel, pídele ayuda a quien hizo tu página.
+      </div>
+    </form>
+  </div>
+</main>
+
+<!-- ============ Editor: tu página, lista para editar ============ -->
+<div class="studio" id="editor" hidden>
+  <div class="tb-brand">
+    <img src="img/logo.png" alt="Demo" width="400" height="240">
+    <small>Editando tu página</small>
+  </div>
+
+  <div class="tb-mid">
+    <div class="seg" role="group" aria-label="Ver la página como en">
+      <button type="button" data-device="desk" aria-pressed="true" title="Computador"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span class="seg-l">Computador</span></button>
+      <button type="button" data-device="phone" aria-pressed="false" title="Celular"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg><span class="seg-l">Celular</span></button>
+    </div>
+  </div>
+
+  <div class="tb-actions">
+    <div class="status" id="status"><i></i><span>Sin cambios</span></div>
+    <button class="btn" id="btn-client" type="button" aria-pressed="false" title="Ver la página como la ven tus clientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span id="client-lbl">Ver como cliente</span></button>
+    <button class="btn" id="btn-options" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="lbl-long">Todas las opciones</span><span class="lbl-short">Opciones</span></button>
+    <button class="btn primary" id="btn-publish" type="button">Publicar</button>
+  </div>
+
+  <div class="tb-side">
+    <button class="btn small" id="logout" type="button">Salir</button>
+  </div>
+
+  <div class="hint" id="hint">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4"/></svg>
+    <p><b>Toca cualquier texto de tu página para cambiarlo.</b> Para precios, fotos, colores, horario y opciones para elegir usa los botones <mark>Editar</mark> de cada parte, o el <b>+</b> de cada producto.</p>
+    <button class="btn small" id="hint-ok" type="button">Entendido</button>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="frame-wrap">
+      <p class="loading" id="loading">Cargando tu página…</p>
+      <iframe id="frame" title="Tu página, en modo edición"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-labelledby="drawer-title">
+  <div class="drawer-head">
+    <div class="t">
+      <button class="back" id="drawer-back" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Todas las opciones</button>
+      <h2 id="drawer-title" tabindex="-1">Todas las opciones</h2>
+      <small id="drawer-sub">Todo lo que se puede cambiar en tu página</small>
+    </div>
+    <button class="btn small primary" id="drawer-close" type="button">Listo</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"><div id="groups"></div><p class="drawer-foot"><a id="view-site" target="_blank" rel="noopener">Ver mi página publicada ↗</a></p></div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const DIAS = [["lunes", "Lunes"], ["martes", "Martes"], ["miercoles", "Miércoles"], ["jueves", "Jueves"], ["viernes", "Viernes"], ["sabado", "Sábado"], ["domingo", "Domingo"]];
+/* Textos fijos de la página: si faltan en carta.js, se usan estos */
+const TEXTOS = {
+  portada: { titulo: "Sushi, burgers", destacado: "y más", bajada: "" },
+  carta: { titulo: "Elige tu", destacado: "antojo", bajada: "" },
+  arma: { titulo: "Arma tu", destacado: "roll" },
+  pasos: { titulo: "Haz tu pedido", destacado: "en 3 pasos.", bajada: "", lista: [{ titulo: "", texto: "" }, { titulo: "", texto: "" }, { titulo: "", texto: "" }] },
+  ubicacion: { titulo: "Te esperamos" },
+  antojo: { titulo: "¿Qué se te", destacado: "antoja hoy?" },
+  pie: { nota: "" }
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const getPath = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+function setPath(o, p, v) {
+  const ks = p.split("."); const last = ks.pop();
+  const parent = ks.reduce((a, k) => a[k], o);
+  parent[last] = v;
+}
+const plata = n => "$" + String(Math.round(n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const nuevoId = pre => pre + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+/* Desde la página solo se aceptan textos que existan en la carta */
+const BAD_KEYS = ["__proto__", "prototype", "constructor"];
+const TEXT_KEYS = ["nombre", "detalle", "nota", "titulo", "destacado", "bajada", "texto"];
+function canSet(p) {
+  if (typeof p !== "string" || !/^[a-z]+(\.[A-Za-z0-9]+)+$/.test(p) || p.split(".").some(k => BAD_KEYS.includes(k))) return false;
+  const ks = p.split("."); const last = ks.pop();
+  if (!TEXT_KEYS.includes(last)) return false;
+  const parent = ks.reduce((a, k) => (a == null ? a : a[k]), state);
+  const v = parent && typeof parent === "object" ? parent[last] : null;
+  return parent != null && typeof parent === "object" && (v == null || typeof v === "string");
+}
+
+const siteBase = new URL("./", location.href);
+const API_URL = new URL("api/admin", siteBase).href;
+let creds = null;
+let state = null;
+let dirty = false;
+const pending = new Map();    // fotos nuevas aún no publicadas: ruta -> { blob, url }
+const localUrls = new Map();  // fotos publicadas en esta sesión: ruta -> url
+const openGroups = new Set();
+let focusGroups = null;       // partes abiertas desde el botón Editar de la página
+
+/* ---------- avisos ---------- */
+let toastTimer;
+function toast(text, isError) {
+  const el = $("#toast");
+  el.textContent = text;
+  el.classList.toggle("err", !!isError);
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), isError ? 7000 : 4200);
+}
+function setStatus(text, kind) {
+  const st = $("#status");
+  st.className = "status" + (kind ? " " + kind : "");
+  st.querySelector("span").textContent = text;
+  st.title = text;
+}
+function markDirty() {
+  dirty = true;
+  setStatus("Cambios sin publicar", "dirty");
+}
+window.addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- servidor del panel ---------- */
+async function api(action, extra) {
+  let res;
+  try {
+    res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.assign({ action, user: creds.user, pass: creds.pass }, extra || {})),
+      cache: "no-store"
+    });
+  } catch (e) {
+    const err = new Error("network"); err.status = 0; throw err;
+  }
+  let data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) { const err = new Error("http " + res.status); err.status = res.status; err.data = data; throw err; }
+  return data;
+}
+
+function explain(err) {
+  const d = err.data || {};
+  if (err.status === 0) return "No hay conexión a internet. Revisa tu señal e inténtalo de nuevo.";
+  if (err.status === 401) return "Usuario o contraseña incorrectos.";
+  if (d.error === "clave") return "Falta configurar la contraseña del panel (ADMIN_PASSWORD) en Vercel (Settings, Environment Variables).";
+  if (d.error === "config") return "Falta configurar la clave GITHUB_TOKEN en Vercel (Settings, Environment Variables).";
+  if (d.error === "github" && d.status === 401) return "La clave GITHUB_TOKEN guardada en Vercel no es válida o venció.";
+  if (d.error === "github" && (d.status === 403 || d.status === 404)) return "La clave GITHUB_TOKEN de Vercel no tiene permiso para guardar en el repositorio.";
+  if (d.error === "github") return "No se pudo guardar en este momento. Inténtalo de nuevo en un minuto.";
+  if (d.error === "foto" || err.status === 413) return "Una de las fotos no se pudo subir. Prueba con otra.";
+  if (err.status === 404 || err.status === 405) return "No encontré el servidor del panel. Revisa que el archivo api/admin.js esté subido.";
+  return "Algo salió mal (" + (err.status || "error") + "). Inténtalo de nuevo en un momento.";
+}
+
+function blobToB64(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(",")[1]);
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+}
+/* Completa lo que falte en la carta para que el panel tenga dónde escribir */
+function withDefaults(site) {
+  const s = site && typeof site === "object" ? clone(site) : {};
+  s.negocio = Object.assign({}, s.negocio);
+  s.tema = Object.assign({ color: "", colorDestacado: "" }, s.tema);
+  if (!s.horario || typeof s.horario !== "object") s.horario = {};
+  DIAS.forEach(([k]) => { if (typeof s.horario[k] !== "string") s.horario[k] = ""; });
+  if (!Array.isArray(s.diasCerrados)) s.diasCerrados = [];
+  if (!Array.isArray(s.secciones)) s.secciones = [];
+  s.secciones.forEach(sec => {
+    if (!Array.isArray(sec.categorias)) sec.categorias = [];
+    sec.categorias.forEach(cat => { if (!Array.isArray(cat.productos)) cat.productos = []; });
+  });
+  if (!Array.isArray(s.personalizacion)) s.personalizacion = [];
+  s.personalizacion.forEach(g => { if (!Array.isArray(g.opciones)) g.opciones = []; });
+  const t = s.textos && typeof s.textos === "object" ? s.textos : {};
+  Object.keys(TEXTOS).forEach(k => { t[k] = Object.assign(clone(TEXTOS[k]), t[k]); });
+  if (!Array.isArray(t.pasos.lista)) t.pasos.lista = clone(TEXTOS.pasos.lista);
+  while (t.pasos.lista.length < 3) t.pasos.lista.push({ titulo: "", texto: "" });
+  s.textos = t;
+  return s;
+}
+
+/* ---------- ingreso ---------- */
+$("#view-site").href = siteBase.href;
+
+$("#eye").addEventListener("click", () => {
+  const input = $("#pass"), show = input.type === "password";
+  input.type = show ? "text" : "password";
+  $("#eye").setAttribute("aria-pressed", show);
+  $("#eye").setAttribute("aria-label", show ? "Ocultar contraseña" : "Mostrar contraseña");
+  document.querySelectorAll("#eye .eye-open").forEach(el => { el.hidden = show; });
+  document.querySelector("#eye .eye-shut").hidden = !show;
+  input.focus();
+});
+$("#forgot").addEventListener("click", () => {
+  const help = $("#forgot-help"), open = help.hidden;
+  help.hidden = !open;
+  $("#forgot").setAttribute("aria-expanded", open);
+});
+
+$("#login-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = $("#login-btn"), msg = $("#login-msg");
+  creds = { user: $("#user").value.trim(), pass: $("#pass").value };
+  msg.textContent = "";
+  btn.disabled = true; btn.textContent = "Entrando…";
+  try {
+    const data = await api("login");
+    if (!data || !data.site) throw Object.assign(new Error("sin carta"), { status: 500, data: { error: "github" } });
+    state = withDefaults(data.site);
+    $("#login").hidden = true;
+    $("#editor").hidden = false;
+    let hintSeen = false;
+    try { hintSeen = localStorage.getItem("panel-hint") === "1"; } catch (err) {}
+    $("#hint").hidden = hintSeen;
+    renderEditor();
+    frame.src = new URL("?preview=1&edit=1&t=" + Date.now(), siteBase).href;
+  } catch (err) {
+    creds = null;
+    msg.textContent = explain(err);
+  } finally {
+    btn.disabled = false; btn.textContent = "Entrar";
+  }
+});
+
+$("#logout").addEventListener("click", () => {
+  if (dirty && !confirm("Tienes cambios sin publicar. ¿Salir igual?")) return;
+  dirty = false; creds = null;
+  location.reload();
+});
+$("#hint-ok").addEventListener("click", () => {
+  $("#hint").hidden = true;
+  try { localStorage.setItem("panel-hint", "1"); } catch (e) {}
+});
+
+/* ---------- la página dentro del panel ---------- */
+const frame = $("#frame");
+function toPage(msg) {
+  if (frame.contentWindow) frame.contentWindow.postMessage(msg, location.origin);
+}
+/* Lo que se ve en la página: lo mismo que se publicará, con las fotos nuevas que aún no se suben */
+function pageSite() {
+  const s = cleanSite(true);
+  s.secciones.forEach(sec => sec.categorias.forEach(cat => cat.productos.forEach(p => {
+    if (p.foto && pending.has(p.foto)) p.foto = pending.get(p.foto).url;
+    else if (p.foto && localUrls.has(p.foto)) p.foto = localUrls.get(p.foto);
+  })));
+  return s;
+}
+function pushSite() { toPage({ type: "pagina-vista", carta: pageSite() }); }
+let pushTimer;
+function pushSoon() { clearTimeout(pushTimer); pushTimer = setTimeout(pushSite, 280); }
+
+window.addEventListener("message", e => {
+  if (e.origin !== location.origin || !e.data || e.source !== frame.contentWindow || !state) return;
+  const d = e.data;
+  if (d.type === "pagina-lista") {
+    $("#loading").hidden = true;
+    pushSite();
+    if ($("#btn-client").getAttribute("aria-pressed") === "true") toPage({ type: "pagina-modo", editar: false });
+  }
+  if (d.type === "pagina-editar" && canSet(d.ruta) && typeof d.valor === "string") {
+    setPath(state, d.ruta, d.valor);
+    markDirty();
+    const input = document.querySelector(`#groups [data-path="${d.ruta}"]`);
+    if (input && input !== document.activeElement) input.value = d.valor;
+  }
+  if (d.type === "pagina-abrir" && Array.isArray(d.grupos)) openDrawer(d.grupos, typeof d.producto === "string" ? d.producto : null);
+});
+
+/* Computador o celular */
+document.querySelectorAll("[data-device]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("[data-device]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  $("#editor").classList.toggle("phone", b.dataset.device === "phone");
+}));
+
+/* Ver como cliente: la página sin marcas de edición, y se puede armar un pedido de prueba */
+$("#btn-client").addEventListener("click", () => {
+  const b = $("#btn-client"), client = b.getAttribute("aria-pressed") !== "true";
+  b.setAttribute("aria-pressed", client);
+  $("#client-lbl").textContent = client ? "Volver a editar" : "Ver como cliente";
+  toPage({ type: "pagina-modo", editar: !client });
+});
+
+/* ---------- panel de opciones ---------- */
+const drawer = $("#drawer");
+function openDrawer(groups, productId) {
+  const known = GROUPS.map(g => g.id);
+  focusGroups = Array.isArray(groups) ? groups.filter(g => known.includes(g)) : null;
+  if (focusGroups && !focusGroups.length) focusGroups = null;
+  const gs = focusGroups ? GROUPS.filter(g => focusGroups.includes(g.id)) : null;
+  $("#drawer-title").textContent = gs ? gs.map(g => g.title).join(" y ") : "Todas las opciones";
+  $("#drawer-sub").textContent = gs ? "Los cambios se ven al instante en tu página" : "Todo lo que se puede cambiar en tu página";
+  $("#drawer-back").hidden = !gs;
+  renderEditor();
+  $("#drawer-body").scrollTop = 0;
+  drawer.classList.add("open");
+  $("#editor").classList.add("drawer-open");
+  $("#scrim").hidden = false;
+  $("#drawer-title").focus({ preventScroll: true });
+  if (productId) {
+    const item = document.querySelector(`#groups [data-producto="${CSS.escape(productId)}"]`);
+    if (item) {
+      item.classList.add("resaltado");
+      setTimeout(() => item.scrollIntoView({ block: "start", behavior: "smooth" }), 60);
+      setTimeout(() => item.classList.remove("resaltado"), 2600);
+    }
+  }
+}
+function closeDrawer() {
+  drawer.classList.remove("open");
+  $("#editor").classList.remove("drawer-open");
+  $("#scrim").hidden = true;
+  focusGroups = null;
+}
+$("#btn-options").addEventListener("click", () => (drawer.classList.contains("open") && !focusGroups ? closeDrawer() : openDrawer(null)));
+$("#drawer-close").addEventListener("click", closeDrawer);
+$("#drawer-back").addEventListener("click", () => openDrawer(null));
+$("#scrim").addEventListener("click", closeDrawer);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && drawer.classList.contains("open")) closeDrawer(); });
+
+/* ---------- constructores del editor ---------- */
+const SVG = {
+  up: '<svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>',
+  down: '<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  del: '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  menu: '<path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/>',
+  roll: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/>',
+  shop: '<path d="M4 9.5 5.5 4h13L20 9.5M4 9.5h16M4 9.5V20h16V9.5M9 20v-5h6v5"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  text: '<path d="M5 6h14M12 6v13M8.5 19h7"/>'
+};
+
+function field(label, path, o = {}) {
+  const v = getPath(state, path);
+  const hint = o.hint ? `<small>${o.hint}</small>` : "";
+  if (o.area) {
+    return `<label class="f">${label}${hint}<textarea class="in" rows="${o.rows || 3}" data-path="${path}" placeholder="${esc(o.ph || "")}">${esc(v)}</textarea></label>`;
+  }
+  const attrs = o.num ? `inputmode="numeric" data-num="${o.num}" autocomplete="off"`
+    : o.type === "tel" ? 'inputmode="numeric" autocomplete="off"'
+    : o.type === "url" ? 'inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false"' : "";
+  return `<label class="f">${label}${hint}<input class="in" data-path="${path}" value="${esc(v == null ? "" : v)}" placeholder="${esc(o.ph || "")}" ${attrs}></label>`;
+}
+function colorField(label, path, base) {
+  const v = String(getPath(state, path) || "");
+  return `<label class="f">${label}<input class="in" type="color" data-path="${path}" value="${esc(/^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : base)}"></label>`;
+}
+function check(label, path, o = {}) {
+  const v = getPath(state, path);
+  const on = o.inverse ? v !== false : !!v;
+  return `<label class="check"><input type="checkbox" data-check="${path}" ${o.inverse ? 'data-inverse="1"' : ""} ${o.uno ? 'data-uno="1"' : ""} ${on ? "checked" : ""}>${label}</label>`;
+}
+function tools(list, i, len, what) {
+  return `<div class="tools">
+    <button class="mini" type="button" data-action="up" data-list="${list}" data-i="${i}" ${i === 0 ? "disabled" : ""} aria-label="Subir ${what}">${SVG.up}</button>
+    <button class="mini" type="button" data-action="down" data-list="${list}" data-i="${i}" ${i === len - 1 ? "disabled" : ""} aria-label="Bajar ${what}">${SVG.down}</button>
+    <button class="mini del" type="button" data-action="del" data-list="${list}" data-i="${i}" data-what="${what}" aria-label="Eliminar ${what}">${SVG.del}</button>
+  </div>`;
+}
+function imgUrl(path) {
+  if (!path) return "";
+  if (pending.has(path)) return pending.get(path).url;
+  if (localUrls.has(path)) return localUrls.get(path);
+  return new URL(path, siteBase).href;
+}
+function group(id, title, sub, icon, body) {
+  return `<details class="group" data-group="${id}" ${openGroups.has(id) ? "open" : ""}>
+    <summary><span class="gi"><svg viewBox="0 0 24 24">${icon}</svg></span><span class="t"><strong>${title}</strong><small>${sub}</small></span>${SVG.chev}</summary>
+    <div class="gbody">${body}</div>
+  </details>`;
+}
+const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+const ARMADO = new Set();     // grupos que se eligen en cada roll
+function armaRolls(cat) { return (cat.personalizar || []).some(g => ARMADO.has(g)); }
+/* Opciones del cliente: una por línea; "Nombre | 7990" le da otro precio a esa opción */
+function opcionesTexto(p) {
+  return (p.opciones || []).map(o => p.preciosOpciones && p.preciosOpciones[o] != null ? `${o} | ${p.preciosOpciones[o]}` : o).join("\n");
+}
+
+/* Grupos de «Opciones para elegir» que se marcan en cada producto (los de cada roll se configuran aparte) */
+function personalizarHTML(p, cat, base) {
+  const gs = state.personalizacion.filter(g => !g.porRoll);
+  if (!gs.length) return "";
+  const lista = p.personalizar || cat.personalizar || [];
+  return `<div class="f">El cliente elige<small>Se pregunta al agregar el producto. Las opciones y sus precios se cambian en «Opciones para elegir».</small></div>
+    <div class="checks">${gs.map(g => `<label class="check"><input type="checkbox" data-personalizar="${base}" value="${esc(g.id)}" ${lista.includes(g.id) ? "checked" : ""}>${esc(g.nombre || "Grupo sin nombre")}</label>`).join("")}
+      <button class="btn small" type="button" data-action="ir-grupos">Editar opciones</button></div>`;
+}
+
+function productHTML(p, base, i, len, cat) {
+  const foto = p.foto
+    ? `<div class="one-photo"><img src="${esc(imgUrl(p.foto))}" alt="" onerror="this.classList.add('missing')">
+        <div class="row"><label class="add">Cambiar foto<input class="vh" type="file" accept="image/*" data-action="photo" data-path="${base}.foto"></label>
+        <button class="btn small" type="button" data-action="clear" data-path="${base}.foto">Quitar foto</button></div></div>`
+    : `<div class="adds"><label class="add">${SVG.plus}Agregar foto<input class="vh" type="file" accept="image/*" data-action="photo" data-path="${base}.foto"></label></div>`;
+  return `<div class="item" data-producto="${esc(p.id)}">
+    <div class="item-head"><strong>${esc(p.nombre || "Producto nuevo")}</strong>${tools(base.replace(/\.\d+$/, ""), i, len, "producto")}</div>
+    <div class="dos">${field("Nombre", `${base}.nombre`)}${field("Precio", `${base}.precio`, { num: "entero", ph: "14500", hint: "Sin punto ni $" })}</div>
+    ${field("Descripción", `${base}.detalle`, { area: true, rows: 3, hint: "Si son varias variedades, una por línea" })}
+    ${field("Nota destacada", `${base}.nota`, { ph: "Ej: Válido por tiempo limitado" })}
+    ${field("Incluye", `${base}.incluye`, { ph: "Ej: 3 salsas: soya o agridulce" })}
+    <label class="f">Variantes (tamaño, sabor…)<small>El cliente elige una. Una por línea; si una cuesta distinto: Nombre | precio</small>
+      <textarea class="in" rows="2" data-opciones="${base}" placeholder="Ej: Simple | 6490&#10;Doble | 8490">${esc(opcionesTexto(p))}</textarea></label>
+    ${personalizarHTML(p, cat, base)}
+    ${typeof p.rolls === "number" || p.__arma ? field("Rolls que arma el cliente", `${base}.rolls`, { num: "rolls", ph: "2", hint: "20 cortes = 2 rolls de 10" }) : ""}
+    ${foto}
+    <div class="checks">${check("Disponible", `${base}.disponible`, { inverse: true })}${check("Mostrar en la portada", `${base}.destacado`)}</div>
+  </div>`;
+}
+function cartaBody() {
+  ARMADO.clear();
+  state.personalizacion.forEach(g => { if (g.porRoll && g.tipo === "elegir") ARMADO.add(g.id); });
+  const secs = state.secciones.map((sec, s) => {
+    const sbase = `secciones.${s}`;
+    const cats = sec.categorias.map((cat, c) => {
+      const cbase = `${sbase}.categorias.${c}`;
+      const arma = armaRolls(cat);
+      const prods = cat.productos.map((p, i) => {
+        if (arma && p.rolls == null) p.__arma = true;
+        return productHTML(p, `${cbase}.productos.${i}`, i, cat.productos.length, cat);
+      }).join("");
+      return `<div class="item">
+        <div class="item-head"><span class="tag">Categoría</span>${tools(`${sbase}.categorias`, c, sec.categorias.length, "categoría")}</div>
+        ${field("Nombre de la categoría", `${cbase}.nombre`)}
+        ${field("Nota de la categoría", `${cbase}.nota`, { area: true, rows: 2, ph: "Ej: Todas las promociones sobre 50 cortes llevan una bebida de regalo." })}
+        ${arma ? field("Cómo se arma cada roll", `${cbase}.ayuda`, { area: true, rows: 2 }) : ""}
+        ${prods || '<p class="empty">Esta categoría no tiene productos.</p>'}
+        <div class="adds"><button class="add" type="button" data-action="add-product" data-path="${cbase}.productos">${SVG.plus}Agregar producto</button></div>
+      </div>`;
+    }).join("");
+    return `<div class="item">
+      <div class="item-head"><span class="tag">Sección ${s + 1}</span>${tools("secciones", s, state.secciones.length, "sección")}</div>
+      ${field("Nombre de la sección", `${sbase}.nombre`, { hint: "Es el botón grande de la carta" })}
+      ${cats || '<p class="empty">Esta sección no tiene categorías.</p>'}
+      <div class="adds"><button class="add" type="button" data-action="add-category" data-path="${sbase}.categorias">${SVG.plus}Agregar categoría</button></div>
+    </div>`;
+  }).join("");
+  return `<p class="note">Los nombres y descripciones también los puedes cambiar tocándolos en la página. Una categoría con foto en algún producto se muestra en tarjetas.</p>
+    ${secs || '<p class="empty">La carta está vacía. Agrega una sección.</p>'}
+    <div class="adds"><button class="add" type="button" data-action="add-section">${SVG.plus}Agregar sección</button></div>`;
+}
+
+/* Cómo se elige un grupo que no es de rolls */
+const MODOS = [["una", "Elige 1 (obligatorio)"], ["varias", "Agregados opcionales (varios)"]];
+const modoGrupo = g => (g.tipo === "elegir" && (g.max || 1) === 1 ? "una" : "varias");
+function usosGrupo(id) {
+  const nombres = [];
+  state.secciones.forEach(s => s.categorias.forEach(c => c.productos.forEach(p => {
+    if ((p.personalizar || c.personalizar || []).includes(id)) nombres.push(p.nombre || "Producto nuevo");
+  })));
+  return nombres;
+}
+function armadoBody() {
+  const gs = state.personalizacion;
+  const grupos = gs.map((g, k) => {
+    const base = `personalizacion.${k}`;
+    const usos = usosGrupo(g.id);
+    const donde = usos.length
+      ? `Se elige en: ${esc(usos.slice(0, 4).join(", "))}${usos.length > 4 ? ` y ${usos.length - 4} más` : ""}.`
+      : "Todavía no está en ningún producto: márcalo en «Carta y precios».";
+    const ops = g.opciones.map((o, i) => `<div class="opcion">
+      ${field("Opción", `${base}.opciones.${i}.nombre`)}
+      ${field("Precio extra", `${base}.opciones.${i}.precio`, { num: "entero", ph: "0" })}
+      <div class="checks">${check("Disponible", `${base}.opciones.${i}.disponible`, { inverse: true })}${g.porRoll ? check("1ª gratis", `${base}.opciones.${i}.gratis`, { uno: true }) : ""}</div>
+      ${tools(`${base}.opciones`, i, g.opciones.length, "opción")}
+    </div>`).join("");
+    const modo = g.porRoll ? "" : `<label class="f">Cómo se elige<select class="in" data-tipo="${base}">
+        ${MODOS.map(([v, t]) => `<option value="${v}" ${modoGrupo(g) === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+      ${modoGrupo(g) === "varias" ? field("Máximo que puede elegir", `${base}.max`, { num: "entero", ph: "10" }) : ""}`;
+    return `<div class="item">
+      <div class="item-head"><span class="tag">${g.porRoll ? "En cada roll" : "Al agregar el producto"}</span>${g.porRoll ? "" : tools("personalizacion", k, gs.length, "grupo")}</div>
+      ${field("Nombre", `${base}.nombre`, { hint: donde })}
+      ${modo}
+      ${field("Explicación para el cliente", `${base}.ayuda`, { area: true, rows: 2, ph: g.porRoll ? "Ej: La primera de cada una va gratis." : "Ej: Elige hasta 3 agregados." })}
+      ${ops || '<p class="empty">Sin opciones.</p>'}
+      <div class="adds"><button class="add" type="button" data-action="add-option" data-path="${base}.opciones">${SVG.plus}Agregar opción</button></div>
+    </div>`;
+  }).join("");
+  return `<p class="note">Lo que el cliente elige al agregar un producto: el punto de la carne, agregados con precio, sabores… y, en los rolls, la proteína, el relleno y la envoltura. En cada producto de «Carta y precios» marcas qué grupos se eligen.</p>
+    ${grupos || '<p class="empty">Todavía no hay opciones para elegir.</p>'}
+    <div class="adds"><button class="add" type="button" data-action="add-group">${SVG.plus}Agregar grupo de opciones</button></div>`;
+}
+
+function horarioBody() {
+  const fechas = state.diasCerrados.map((f, i) => `<div class="fecha">
+      <input class="in" type="date" data-path="diasCerrados.${i}" value="${esc(f)}" aria-label="Día sin atención ${i + 1}">
+      <button class="mini del" type="button" data-action="del-date" data-i="${i}" aria-label="Quitar este día">${SVG.del}</button>
+    </div>`).join("");
+  return `<p class="note">Escribe el horario así: <b>14:00-23:00</b>. Si hay dos turnos: <b>12:00-15:30, 19:00-23:00</b>. Si no abres, escribe <b>cerrado</b>.</p>
+    ${DIAS.map(([k, n]) => `<label class="dia"><span>${n}</span><input class="in" data-path="horario.${k}" value="${esc(state.horario[k])}" placeholder="cerrado"></label>`).join("")}
+    ${check("Horario confirmado: mostrar «Abierto / Cerrado» y no dejar pedir fuera de horario", "horarioConfirmado")}
+    <div class="f">Días sin atención (feriados)<small>Ese día la página aparece cerrada aunque el horario diga abierto.</small></div>
+    ${fechas}
+    <div class="adds"><button class="add" type="button" data-action="add-date">${SVG.plus}Agregar día</button></div>`;
+}
+
+const GROUPS = [
+  { id: "carta", title: "Carta y precios", icon: SVG.menu, sub: () => {
+      const n = state.secciones.reduce((a, s) => a + s.categorias.reduce((b, c) => b + c.productos.length, 0), 0);
+      return plural(n, "producto", "productos") + ", fotos y promos de la portada";
+    }, body: cartaBody },
+  { id: "armado", title: "Opciones para elegir", icon: SVG.roll, sub: () => {
+      const n = state.personalizacion.map(g => g.nombre).filter(Boolean);
+      return n.length ? n.slice(0, 4).join(", ") + (n.length > 4 ? "…" : "") : "Agregados, punto de la carne, rolls…";
+    }, body: armadoBody },
+  { id: "negocio", title: "Local y contacto", icon: SVG.shop, sub: () => "Nombre, colores, WhatsApp, dirección y delivery", body: () =>
+      field("Nombre del local", "negocio.nombre") +
+      field("Frase corta", "negocio.lema", { ph: "Sushi, burgers y más" }) +
+      `<div class="f">Colores de la marca<small>El principal va en botones y detalles; el destacado, en los títulos de color. Elige un principal oscuro o intenso para que el texto blanco se lea bien.</small></div>
+      <div class="dos">${colorField("Color principal", "tema.color", "#d01c23")}${colorField("Color destacado", "tema.colorDestacado", "#ffcc1f")}</div>
+      <div class="adds"><button class="add" type="button" data-action="clear-tema">Volver a los colores de la plantilla</button></div>` +
+      `<div class="dos">${field("WhatsApp para pedidos", "negocio.whatsapp", { type: "tel", hint: "Solo números, con 56", ph: "56912345678" })}${field("Número como se muestra", "negocio.whatsappVisible", { ph: "+56 9 1234 5678" })}</div>` +
+      field("Enlace de Facebook", "negocio.facebook", { type: "url" }) +
+      field("Instagram", "negocio.instagram", { hint: "Solo el usuario, sin @", type: "url" }) +
+      `<div class="dos">${field("Dirección", "negocio.direccion")}${field("Sector", "negocio.sector")}</div>` +
+      field("Ciudad", "negocio.ciudad") +
+      field("Enlace de Google Maps", "negocio.mapa", { type: "url", hint: "Se abre con «Abrir en Google Maps» y «Ver cómo llegar»" }) +
+      field("Búsqueda para el mapa de la página", "negocio.mapaBusqueda", { hint: "Nombre del local y dirección, como en Google Maps" }) +
+      `<div class="dos">${field("Valor del delivery", "negocio.valorDelivery", { num: "opcional", hint: "Vacío si depende del sector" })}${field("Texto del delivery", "negocio.notaDelivery", { ph: "Según el sector" })}</div>` +
+      field("Datos para transferencia", "negocio.datosTransferencia", { area: true, rows: 4, hint: "Se muestran cuando el cliente elige pagar con transferencia", ph: "Banco…\nCuenta…\nRUT…" }) +
+      check("Mostrar el aviso «Carta de referencia»", "negocio.cartaReferencial") },
+  { id: "horario", title: "Horario", icon: SVG.clock, sub: () => state.horarioConfirmado ? "Confirmado" : "Referencial, por confirmar", body: horarioBody },
+  { id: "textos", title: "Textos de la página", icon: SVG.text, sub: () => "Títulos y textos de cada parte", body: () => {
+      const t = state.textos;
+      const par = (base, nombre) => `<div class="dos">${field(nombre + ": título", base + ".titulo")}${field("En color", base + ".destacado")}</div>`;
+      return `<p class="note">También los puedes cambiar tocándolos en la página.</p>
+        ${par("textos.portada", "Portada")}${field("Texto de la portada", "textos.portada.bajada", { area: true, rows: 3 })}
+        ${par("textos.carta", "Carta")}${field("Texto de la carta", "textos.carta.bajada", { area: true, rows: 2 })}
+        ${par("textos.arma", "Arma tu roll")}
+        ${par("textos.pasos", "Cómo pedir")}${field("Texto de cómo pedir", "textos.pasos.bajada", { area: true, rows: 2 })}
+        ${t.pasos.lista.map((p, i) => `<div class="item"><strong>Paso ${i + 1}</strong>${field("Título", `textos.pasos.lista.${i}.titulo`)}${field("Texto", `textos.pasos.lista.${i}.texto`, { area: true, rows: 2 })}</div>`).join("")}
+        ${field("Ubicación: título", "textos.ubicacion.titulo")}
+        ${par("textos.antojo", "Final")}
+        ${field("Pie de página", "textos.pie.nota", { area: true, rows: 2 })}`;
+    } }
+];
+
+function renderEditor() {
+  const body = $("#drawer-body");
+  const y = body.scrollTop;
+  if (focusGroups) {
+    const gs = GROUPS.filter(g => focusGroups.includes(g.id));
+    $("#groups").innerHTML = gs.map(g => `<section class="fgroup" data-group="${g.id}">
+      ${gs.length > 1 ? `<h3><span class="gi"><svg viewBox="0 0 24 24">${g.icon}</svg></span>${g.title}</h3>` : ""}
+      <div class="gbody">${g.body()}</div></section>`).join("");
+  } else {
+    $("#groups").innerHTML = GROUPS.map(g => group(g.id, g.title, g.sub(), g.icon, g.body())).join("");
+  }
+  body.scrollTop = y;
+}
+
+/* ---------- edición ---------- */
+const groupsEl = $("#groups");
+groupsEl.addEventListener("toggle", e => {
+  const g = e.target.closest && e.target.closest(".group");
+  if (!g || e.target !== g) return;
+  if (g.open) {
+    openGroups.add(g.dataset.group);
+    const zona = { carta: "carta", armado: "armado", negocio: "negocio", horario: "horario", textos: "textos" }[g.dataset.group];
+    toPage({ type: "pagina-ir", grupo: zona });
+  } else openGroups.delete(g.dataset.group);
+}, true);
+
+groupsEl.addEventListener("input", e => {
+  const el = e.target;
+  if (el.dataset.opciones) {
+    const p = getPath(state, el.dataset.opciones);
+    const opciones = [], precios = {};
+    el.value.split("\n").map(l => l.trim()).filter(Boolean).forEach(l => {
+      const m = /^(.*?)\s*\|\s*\$?\s*([\d.]+)\s*$/.exec(l);
+      const nombre = (m ? m[1] : l).trim();
+      if (!nombre || opciones.includes(nombre)) return;
+      opciones.push(nombre);
+      if (m) precios[nombre] = parseInt(m[2].replace(/\./g, ""), 10);
+    });
+    p.opciones = opciones;
+    p.preciosOpciones = precios;
+  } else if (el.dataset.path && el.type !== "file" && el.type !== "checkbox" && el.tagName !== "SELECT") {
+    let v = el.value;
+    if (el.dataset.num) {
+      const n = parseInt(v.replace(/[^\d]/g, ""), 10);
+      v = Number.isFinite(n) ? n : (el.dataset.num === "entero" ? "" : null);
+    }
+    setPath(state, el.dataset.path, v);
+    const head = el.closest(".item") && el.dataset.path.endsWith(".nombre") && el.closest(".item").querySelector(":scope > .item-head > strong");
+    if (head) head.textContent = el.value || "Producto nuevo";
+  } else return;
+  markDirty();
+  pushSoon();
+});
+groupsEl.addEventListener("change", e => {
+  const el = e.target;
+  if (el.dataset.check) {
+    let v = el.checked;
+    if (el.dataset.inverse) v = el.checked ? true : false;
+    if (el.dataset.uno) v = el.checked ? 1 : 0;
+    setPath(state, el.dataset.check, v);
+    markDirty(); pushSite();
+    if (el.dataset.check === "horarioConfirmado") renderEditor();
+  }
+  if (el.dataset.personalizar) {
+    const p = getPath(state, el.dataset.personalizar);
+    const cat = getPath(state, el.dataset.personalizar.replace(/\.productos\.\d+$/, ""));
+    const orden = state.personalizacion.map(g => g.id);
+    let lista = (p.personalizar || cat.personalizar || []).filter(id => id !== el.value);
+    if (el.checked) lista.push(el.value);
+    lista = lista.filter(id => orden.includes(id)).sort((x, y) => orden.indexOf(x) - orden.indexOf(y));
+    // si queda igual que el resto de la categoría, el producto vuelve a usar el de la categoría
+    const deCat = (cat.personalizar || []).filter(id => orden.includes(id));
+    if (lista.join() === deCat.join()) delete p.personalizar; else p.personalizar = lista;
+    markDirty(); pushSite();
+  }
+  if (el.dataset.tipo) {
+    const g = getPath(state, el.dataset.tipo);
+    if (el.value === "una") Object.assign(g, { tipo: "elegir", min: 1, max: 1 });
+    else Object.assign(g, { tipo: "extra", min: 0, max: 10 });
+    markDirty(); renderEditor(); pushSite();
+  }
+  if (el.type === "date") { setPath(state, el.dataset.path, el.value); markDirty(); pushSite(); }
+  if (el.type === "file") handleFiles(el);
+});
+
+groupsEl.addEventListener("click", e => {
+  const b = e.target.closest("button[data-action]");
+  if (!b) return;
+  const a = b.dataset.action;
+  if (a === "up" || a === "down" || a === "del") {
+    const list = getPath(state, b.dataset.list), i = +b.dataset.i;
+    if (a === "del") {
+      const que = { producto: "este producto", "categoría": "esta categoría y sus productos", "sección": "esta sección y todo lo que tiene", "opción": "esta opción", grupo: "este grupo de opciones (se quita de todos los productos)" }[b.dataset.what] || "esto";
+      if (!confirm(`¿Eliminar ${que}?`)) return;
+      list.splice(i, 1);
+    } else {
+      const j = a === "up" ? i - 1 : i + 1;
+      if (j < 0 || j >= list.length) return;
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+  } else if (a === "add-product") {
+    getPath(state, b.dataset.path).push({ id: nuevoId("p"), nombre: "Producto nuevo", detalle: "", precio: "" });
+  } else if (a === "add-category") {
+    getPath(state, b.dataset.path).push({ id: nuevoId("c"), nombre: "Nueva categoría", productos: [] });
+  } else if (a === "add-section") {
+    state.secciones.push({ nombre: "Nueva sección", categorias: [{ id: nuevoId("c"), nombre: "Nueva categoría", productos: [] }] });
+  } else if (a === "add-option") {
+    getPath(state, b.dataset.path).push({ id: nuevoId("o"), nombre: "", precio: 0 });
+  } else if (a === "add-group") {
+    state.personalizacion.push({ id: nuevoId("g"), nombre: "Nuevo grupo", tipo: "extra", min: 0, max: 10, opciones: [{ id: nuevoId("o"), nombre: "", precio: 0 }] });
+  } else if (a === "clear-tema") {
+    state.tema = { color: "", colorDestacado: "" };
+  } else if (a === "ir-grupos") {
+    openDrawer(["armado"]);
+    return;
+  } else if (a === "add-date") {
+    state.diasCerrados.push("");
+  } else if (a === "del-date") {
+    state.diasCerrados.splice(+b.dataset.i, 1);
+  } else if (a === "clear") {
+    setPath(state, b.dataset.path, "");
+  } else return;
+  markDirty();
+  renderEditor();
+  pushSite();
+  if (a === "add-product") {
+    // el producto nuevo queda a la vista, con su nombre listo para escribir
+    const nuevo = [...document.querySelectorAll("#groups [data-producto]")]
+      .filter(x => x.querySelector(`[data-path^="${b.dataset.path}."]`)).pop();
+    if (nuevo) { nuevo.scrollIntoView({ block: "center" }); const inp = nuevo.querySelector("input"); if (inp) inp.select(); }
+  }
+});
+
+/* ---------- fotos ---------- */
+function newPhotoPath() {
+  const d = new Date();
+  const stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+  return `fotos/${stamp}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+}
+async function prepareImage(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const max = 1400;
+    const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * s), h = Math.round(img.naturalHeight * s);
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0, w, h);
+    const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.82));
+    if (!blob) throw new Error("toBlob");
+    return blob;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+async function handleFiles(input) {
+  const file = input.files[0];
+  if (!file) return;
+  toast("Preparando la foto…");
+  try {
+    const blob = await prepareImage(file);
+    const p = newPhotoPath();
+    pending.set(p, { blob, url: URL.createObjectURL(blob) });
+    setPath(state, input.dataset.path, p);
+    markDirty(); renderEditor(); pushSite();
+    toast("Foto agregada. Toca Publicar para subirla.");
+  } catch (e) {
+    toast("No pude abrir esa foto. Prueba con otra.", true);
+  }
+  input.value = "";
+}
+function usedPhotos(site) {
+  const used = new Set();
+  site.secciones.forEach(s => s.categorias.forEach(c => c.productos.forEach(p => { if (p.foto) used.add(p.foto); })));
+  return used;
+}
+
+/* ---------- publicar ---------- */
+/* La carta como queda guardada: sin campos vacíos y con números donde van números.
+   Con "vista" no se descarta nada, para que la página muestre lo que se está escribiendo. */
+function cleanSite(vista) {
+  const s = clone(state);
+  const n = s.negocio;
+  n.whatsapp = String(n.whatsapp || "").replace(/\D/g, "");
+  n.instagram = String(n.instagram || "").trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*$/, "");
+  n.valorDelivery = typeof n.valorDelivery === "number" ? n.valorDelivery : null;
+  if (!n.datosTransferencia) n.datosTransferencia = null;
+  const horario = {};
+  let abre = false;
+  DIAS.forEach(([k]) => {
+    const v = String(s.horario[k] || "").trim();
+    horario[k] = v && !/cerrad/i.test(v) ? v : "cerrado";
+    if (horario[k] !== "cerrado") abre = true;
+  });
+  s.horario = abre ? horario : null;
+  s.horarioConfirmado = !!s.horarioConfirmado;
+  s.diasCerrados = s.diasCerrados.filter(f => /^\d{4}-\d{2}-\d{2}$/.test(f));
+  const tema = {};
+  ["color", "colorDestacado"].forEach(k => { const v = String(s.tema[k] || "").trim(); if (/^#[0-9a-f]{6}$/i.test(v)) tema[k] = v.toLowerCase(); });
+  if (Object.keys(tema).length) s.tema = tema; else delete s.tema;
+  const grupos = s.personalizacion.map(g => g.id);
+  s.secciones.forEach(sec => sec.categorias.forEach(cat => {
+    ["nota", "ayuda"].forEach(k => { if (!cat[k]) delete cat[k]; });
+    if (Array.isArray(cat.personalizar)) cat.personalizar = cat.personalizar.filter(id => grupos.includes(id));
+    if (!Array.isArray(cat.personalizar) || !cat.personalizar.length) delete cat.personalizar;
+    cat.productos.forEach(p => {
+      delete p.__arma;
+      if (Array.isArray(p.personalizar)) p.personalizar = p.personalizar.filter(id => grupos.includes(id));
+      else delete p.personalizar;
+      ["detalle", "nota", "incluye", "foto"].forEach(k => { if (typeof p[k] === "string") p[k] = p[k].trim(); if (!p[k]) delete p[k]; });
+      if (typeof p.precio !== "number") p.precio = vista ? 0 : p.precio;
+      if (!p.opciones || !p.opciones.length) { delete p.opciones; delete p.preciosOpciones; }
+      else if (p.preciosOpciones) {
+        Object.keys(p.preciosOpciones).forEach(k => { if (!p.opciones.includes(k)) delete p.preciosOpciones[k]; });
+        if (!Object.keys(p.preciosOpciones).length) delete p.preciosOpciones;
+      }
+      if (p.rolls == null) delete p.rolls;
+      else if (!Array.isArray(p.rolls)) { if (typeof p.rolls === "number" && p.rolls > 0) p.rolls = Math.min(30, p.rolls); else delete p.rolls; }
+      if (!p.destacado) delete p.destacado;
+      if (p.disponible !== false) delete p.disponible;
+    });
+  }));
+  s.personalizacion.forEach(g => {
+    if (!g.ayuda) delete g.ayuda;
+    if (g.tipo === "extra") { g.min = 0; g.max = typeof g.max === "number" && g.max > 0 ? g.max : 10; }
+    if (!vista) g.opciones = g.opciones.filter(o => String(o.nombre || "").trim());
+    g.opciones.forEach(o => {
+      o.precio = typeof o.precio === "number" ? o.precio : 0;
+      if (!o.gratis) delete o.gratis;
+      if (o.disponible !== false) delete o.disponible;
+    });
+  });
+  return s;
+}
+/* Lo que impide publicar, explicado para corregirlo */
+function problema(site) {
+  if (site.negocio.whatsapp.length < 8) return "Revisa el número de WhatsApp: debe tener solo números, con el 56 adelante.";
+  let total = 0;
+  for (const sec of site.secciones) for (const cat of sec.categorias) for (const p of cat.productos) {
+    total++;
+    if (!String(p.nombre || "").trim()) return `Hay un producto sin nombre en «${cat.nombre}».`;
+    if (typeof p.precio !== "number") return `Falta el precio de «${p.nombre}».`;
+  }
+  if (!total) return "Deja al menos un producto en la carta.";
+  for (const g of site.personalizacion) {
+    if (!String(g.nombre || "").trim()) return "Hay un grupo sin nombre en «Opciones para elegir».";
+    if ((g.min || 0) > 0 && !g.opciones.some(o => o.disponible !== false)) return `El grupo «${g.nombre}» no tiene opciones disponibles para elegir.`;
+  }
+  return null;
+}
+
+$("#btn-publish").addEventListener("click", publish);
+async function publish() {
+  const site = cleanSite(false);
+  const error = problema(site);
+  if (error) { toast(error, true); return; }
+  const btn = $("#btn-publish");
+  btn.disabled = true;
+  try {
+    const used = usedPhotos(site);
+    const toUpload = [...pending.keys()].filter(p => used.has(p));
+    const photos = [];
+    for (let i = 0; i < toUpload.length; i++) {
+      const item = pending.get(toUpload[i]);
+      if (!item.sha) {
+        setStatus(`Subiendo fotos (${i + 1} de ${toUpload.length})…`);
+        const r = await api("photo", { data: await blobToB64(item.blob) });
+        item.sha = r.sha;
+      }
+      photos.push({ path: toUpload[i], sha: item.sha });
+    }
+    setStatus("Guardando los cambios…");
+    await api("publish", { site, photos });
+
+    toUpload.forEach(p => { localUrls.set(p, pending.get(p).url); pending.delete(p); });
+    state = withDefaults(site);
+    dirty = false;
+    renderEditor();
+    pushSite();
+    setStatus("Publicado. Tu página se actualiza en uno o dos minutos.", "ok");
+    toast("¡Listo! Tu página se actualiza en uno o dos minutos.");
+  } catch (err) {
+    setStatus("No se pudo publicar", "dirty");
+    toast(explain(err), true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>

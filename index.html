@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+<title>Demo | Sushi, hamburguesas y más</title>
+<meta name="description" content="Demo: promos, sushi, hamburguesas, para picar, bebestibles y postres. Arma tu pedido y envíalo por WhatsApp.">
+<meta name="theme-color" content="#121014">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Demo">
+<meta property="og:description" content="Promos, sushi, hamburguesas y bebestibles. Pide por WhatsApp.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="img/icono-192.png">
+<link rel="apple-touch-icon" href="img/icono-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<link rel="stylesheet" href="css/estilos.css">
+<!-- Productos, precios, colores, horario y datos del local: se editan en carta.js -->
+<script src="carta.js"></script>
+<script src="js/tema.js"></script>
+<script src="js/app.js" defer></script>
+</head>
+<body>
+<a class="saltar" href="#carta">Saltar a la carta</a>
+
+<header class="cabecera">
+  <div class="contenedor cabecera-fila">
+    <a class="marca" href="#inicio" aria-label="Demo, ir al inicio">
+      <img class="marca-logo marca-logo--ancho" src="img/logo.png" width="400" height="240" alt="Demo">
+    </a>
+    <nav class="menu" aria-label="Secciones">
+      <a href="#carta">Carta</a>
+      <a href="#arma">Arma tu roll</a>
+      <a href="#como-pedir">Cómo pedir</a>
+      <a href="#ubicacion" data-si="direccion">Ubicación</a>
+    </nav>
+    <button class="boton-pedido" type="button" data-abrir-pedido aria-label="Mi pedido, 0 productos">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span class="boton-pedido-texto">Mi pedido</span>
+      <span class="contador" data-contador>0</span>
+    </button>
+  </div>
+</header>
+
+<main id="contenido">
+
+  <section class="portada" id="inicio">
+    <div class="portada-fondo" aria-hidden="true"></div>
+    <div class="contenedor portada-grilla">
+      <div class="portada-texto">
+        <p class="estado" data-estado hidden></p>
+        <h1 class="portada-titulo"><span data-texto="portada.titulo">Sushi, burgers</span> <span class="brillo" data-texto="portada.destacado">y más</span></h1>
+        <p class="portada-bajada" data-texto="portada.bajada">Promos, sushi, hamburguesas, para picar y bebestibles. Arma tu pedido y mándalo por WhatsApp: el resto lo confirmamos contigo.</p>
+        <div class="portada-acciones">
+          <a class="boton" href="#carta">Ver la carta <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="enlace-wsp" data-wsp href="https://wa.me/56900000000" target="_blank" rel="noopener">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z"/><path d="M9.2 8.6c.3 2.7 2.4 5 5.2 5.6l1.2-1.3-1.8-1-1 .7c-.9-.5-1.7-1.3-2.2-2.2l.7-1-1-1.8Z"/></svg>
+            Pedir por WhatsApp
+          </a>
+        </div>
+        <dl class="portada-datos">
+          <div><dt>Pedidos</dt><dd data-dato="whatsapp">+56 9 0000 0000</dd></div>
+          <div data-si="direccion" hidden><dt>Dónde</dt><dd data-dato="direccion-ciudad"></dd></div>
+          <div data-si="horario" hidden><dt>Horario</dt><dd data-dato="horario"></dd></div>
+        </dl>
+        <p class="portada-nota" data-si="horario" data-dato="nota-horario" hidden></p>
+      </div>
+      <div class="destacados" data-destacados></div>
+    </div>
+    <div class="contenedor portada-pie">
+      <span data-dato="lema">Sushi, burgers y más</span>
+      <a class="bajar" href="#carta" aria-label="Bajar a la carta"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+      <span class="portada-pie-der">Elige tu promo</span>
+    </div>
+  </section>
+
+  <section class="carta" id="carta" aria-labelledby="carta-titulo">
+    <div class="contenedor">
+      <div class="carta-cabeza">
+        <div>
+          <h2 class="titulo-grande" id="carta-titulo"><span data-texto="carta.titulo">Elige tu</span> <span class="acento" data-texto="carta.destacado">antojo</span></h2>
+          <p class="carta-bajada" data-texto="carta.bajada">Promos, sushi, hamburguesas, para picar, bebestibles y postres. Suma lo que quieras al pedido.</p>
+        </div>
+        <label class="buscador">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+          <span class="oculto">Buscar en la carta</span>
+          <input type="search" data-buscar placeholder="Busca en la carta" autocomplete="off" enterkeyhint="search">
+        </label>
+      </div>
+      <p class="aviso-carta" data-aviso-carta><span class="aviso-i" aria-hidden="true">i</span><span><b>Carta de referencia.</b> Precios y fotos pueden cambiar. Confirma disponibilidad por WhatsApp.</span></p>
+    </div>
+    <nav class="secciones" aria-label="Secciones de la carta">
+      <div class="contenedor"><div class="pildoras pildoras--grandes" data-secciones></div></div>
+    </nav>
+    <div class="contenedor">
+      <div class="pildoras pildoras--chicas" data-categorias></div>
+      <div class="carta-lista" data-lista aria-live="polite">
+        <p class="sin-js">Cargando la carta…</p>
+      </div>
+      <p class="carta-otra">
+        <span>¿Buscabas otra cosa?</span>
+        <a data-wsp href="https://wa.me/56900000000" target="_blank" rel="noopener">Pregúntanos por WhatsApp <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="arma" id="arma" aria-labelledby="arma-titulo">
+    <div class="contenedor">
+      <div class="arma-cabeza">
+        <div>
+          <h2 class="titulo-grande titulo-grande--claro" id="arma-titulo"><span data-texto="arma.titulo">Arma tu</span> <span class="brillo" data-texto="arma.destacado">roll</span></h2>
+          <p class="arma-bajada" data-armado-ayuda></p>
+        </div>
+        <a class="boton" href="#carta" data-armado-ir>Armar mis rolls <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="arma-grilla" data-armado-info></div>
+    </div>
+  </section>
+
+  <section class="pasos" id="como-pedir" aria-labelledby="pasos-titulo">
+    <div class="contenedor pasos-grilla">
+      <div>
+        <h2 class="titulo-grande" id="pasos-titulo"><span data-texto="pasos.titulo">Haz tu pedido</span> <span class="acento" data-texto="pasos.destacado">en 3 pasos.</span></h2>
+        <p class="pasos-bajada" data-texto="pasos.bajada">El pedido te llega listo para enviar por WhatsApp. Nosotros te confirmamos disponibilidad, modalidad y total.</p>
+      </div>
+      <ol class="pasos-lista">
+        <li><span class="pasos-num">01</span><div><h3 data-texto="pasos.lista.0.titulo">Elige o arma</h3><p data-texto="pasos.lista.0.texto">Escoge una promo, una burger con tus agregados o arma tus rolls como más te gusten.</p></div></li>
+        <li><span class="pasos-num">02</span><div><h3 data-texto="pasos.lista.1.titulo">Revisa tu pedido</h3><p data-texto="pasos.lista.1.texto">Ajusta cantidades, deja una nota y elige si lo retiras o pides delivery.</p></div></li>
+        <li><span class="pasos-num">03</span><div><h3 data-texto="pasos.lista.2.titulo">Envíalo por WhatsApp</h3><p data-texto="pasos.lista.2.texto">Te respondemos para confirmar el pedido y el total.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="ubicacion" id="ubicacion" aria-labelledby="ubicacion-titulo" data-si="direccion" hidden>
+    <div class="contenedor ubicacion-grilla">
+      <div>
+        <h2 class="titulo-grande" id="ubicacion-titulo"><span data-texto="ubicacion.titulo">Te esperamos</span> <span class="acento">en <span data-dato="sector">Centro</span>.</span></h2>
+        <ul class="datos-local">
+          <li>
+            <svg class="icono icono--acento" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
+            <div><b data-dato="direccion"></b><span><span data-dato="sector-ciudad"></span><span data-si="region">, <span data-dato="region"></span></span></span></div>
+          </li>
+          <li data-si="horario">
+            <svg class="icono icono--acento icono--circulo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><path d="M12 8v4l2.5 2"/></svg>
+            <div data-horario-largo></div>
+          </li>
+        </ul>
+        <p class="nota-chica" data-si="horario" data-dato="nota-horario"></p>
+        <a class="boton boton--oscuro" data-mapa data-si="mapa" href="#" target="_blank" rel="noopener">Abrir en Google Maps <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <figure class="mapa">
+        <div class="mapa-marco">
+          <a class="mapa-enlace" data-mapa href="#" target="_blank" rel="noopener">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
+            <b>Ver en Google Maps</b>
+            <span data-dato="direccion-ciudad"></span>
+          </a>
+          <iframe data-mapa-embed title="Mapa del local" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <figcaption>
+          <svg class="icono icono--acento" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
+          <span><b data-dato="nombre">Demo</b><small data-dato="direccion-ciudad"></small></span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="antojo" aria-labelledby="antojo-titulo">
+    <div class="antojo-fondo" aria-hidden="true"></div>
+    <div class="contenedor antojo-centro">
+      <h2 class="titulo-grande titulo-grande--claro" id="antojo-titulo"><span data-texto="antojo.titulo">¿Qué se te</span> <span class="brillo" data-texto="antojo.destacado">antoja hoy?</span></h2>
+      <a class="boton boton--claro" href="#carta">Armar mi pedido <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="contenedor">
+    <div class="pie-fila">
+      <div class="pie-marca">
+        <img class="marca-logo marca-logo--ancho" src="img/logo.png" width="400" height="240" alt="Demo">
+        <span class="pie-lema">Pedidos por WhatsApp: <span data-dato="whatsapp">+56 9 0000 0000</span></span>
+      </div>
+      <nav class="pie-enlaces" aria-label="Redes">
+        <a data-facebook data-si="facebook" hidden href="#" target="_blank" rel="noopener">Facebook <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a data-instagram data-si="instagram" hidden href="#" target="_blank" rel="noopener">Instagram <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a data-wsp href="https://wa.me/56900000000" target="_blank" rel="noopener">WhatsApp <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </nav>
+    </div>
+    <p class="pie-nota" data-texto="pie.nota">Página de demostración. Precios y promociones sujetos a confirmación por WhatsApp.</p>
+  </div>
+</footer>
+
+<button class="barra-pedido" type="button" data-abrir-pedido data-barra hidden>
+  <span class="barra-cuenta" data-contador>0</span>
+  <span>Ver mi pedido</span>
+  <b data-barra-total>$0</b>
+</button>
+
+<div class="aviso-agregado" data-aviso role="status" aria-live="polite"></div>
+
+<dialog class="ficha" data-ficha aria-labelledby="ficha-titulo">
+  <div class="ficha-caja">
+    <button class="cerrar" type="button" data-cerrar aria-label="Cerrar">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <div class="ficha-cuerpo" data-ficha-cuerpo></div>
+    <div class="ficha-pie">
+      <button class="boton boton--grande" type="button" data-confirmar></button>
+      <p class="nota-chica">Precio referencial. Te confirmamos disponibilidad y detalles por WhatsApp.</p>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="pedido" data-pedido aria-labelledby="pedido-titulo">
+  <div class="pedido-caja">
+    <header class="pedido-cab">
+      <h2 id="pedido-titulo">Mi pedido <span class="pedido-cuenta" data-pedido-cuenta></span></h2>
+      <button class="cerrar" type="button" data-cerrar aria-label="Cerrar pedido">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <div class="pedido-cuerpo" data-pedido-cuerpo></div>
+    <div class="pedido-pie" data-pedido-pie></div>
+  </div>
+</dialog>
+</body>
+</html>
